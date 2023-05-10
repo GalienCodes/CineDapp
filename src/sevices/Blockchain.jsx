@@ -44,7 +44,24 @@ const isWallectConnected = async () => {
   }
 }
 
+const getEtheriumContract = async () => {
+  const connectedAccount = getGlobalState('connectedAccount')
 
+  if (connectedAccount) {
+    const web3 = window.web3
+    const networkId = await web3.eth.net.getId()
+    const networkData = abi.networks[networkId]
+
+    if (networkData) {
+      const contract = new web3.eth.Contract(abi.abi, networkData.address)
+      return contract
+    } else {
+      return null
+    }
+  } else {
+    return getGlobalState('contract')
+  }
+}
 
 
 export {

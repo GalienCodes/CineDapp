@@ -10,7 +10,9 @@ body{
   font-family: "Poppins", "sans-serif";
   background: rgb(244, 244, 252);
 }
-
+.navbar{
+  background: rgb(244, 244, 252);
+}
 .lds-dual-ring {
   display: inline-block;
 }

@@ -1,87 +1,93 @@
-import React, { useState } from 'react'
-import { Link } from 'react-router-dom'
-import { connectWallet } from '../sevices/Blockchain'
-import { truncate, useGlobalState } from '../store'
-import { HiMenuAlt3 } from 'react-icons/hi';
-import { MdClose } from 'react-icons/md';
+import React, { useState } from 'react';
+import { GiHamburgerMenu } from 'react-icons/gi';
+import { AiOutlineClose } from 'react-icons/ai';
+import { setGlobalState, truncate, useGlobalState } from '../store';
+import { connectWallet } from '../sevices/Blockchain';
 
 const NavBar = () => {
-  const [connectedAccount] = useGlobalState('connectedAccount')
-  const [opened, setOpened] = useState(false)
-  const handleOpened = ()=>{
-    setOpened(!opened)
-  }
-  return (
-    <div className=" sm:px-8 bg-[#8D72E1] z-30 mx-auto w-full fixed shadow-sm text-gray-50">
-        <div className=' flex items-center justify-between py-4 sm:mx-0 mx-4 '>
-          <Link to={'/'}>
-            <h1 className='font-black text-4xl'>Reserve</h1>
-          </Link>
-          {/* tablet laptop */}
-          <div className=''>
-            <ul className='sm:flex justify-center gap-4 lg:mx-gap-10 text-gray-50 hidden font-medium'>
-              <Link to={'/'}>
-                <li className='cursor-pointer'>Home</li>
-              </Link>
-              <Link to={'/about'}>
-                <li className='cursor-pointer'>About</li>
-              </Link>
-              <Link to={'/my-events'}>
-                <li className='cursor-pointer'>My events</li>
-              </Link>
-              <Link to={'/my-tickets'}>
-                <li className='cursor-pointer'>My tickets</li>
-              </Link>
-            </ul>
-          </div>
-           {/* phone */}
-           <div className={opened?"block": "hidden"}>
-              <ul className='fixed top-0 left-0 bottom-0 gap-3 flex flex-col shadow-xl overflow-hidden  h-48 w-5/6 max-w-sm py-6 px-6 bg-[#8D72E1] border-r overflow-y-auto'>
-              <Link to={'/'}>
-                  <li className='cursor-pointer text-lg font-medium' onClick={()=>handleOpened()}>Home</li>
-              </Link>
-              <Link to={'/about'}>
-                <li className='cursor-pointer text-lg font-medium' onClick={()=>handleOpened()}>About</li>
-              </Link>
-              <Link to={'/my-events'}>
-                <li className='cursor-pointer text-lg font-medium' onClick={()=>handleOpened()}>My events</li>
-              </Link>
-              <Link to={'/my-tickets'}>
-                <li className='cursor-pointer text-lg font-medium' onClick={()=>handleOpened()}>Mytickets</li>
-              </Link>
-             
-              </ul>
-          </div>
+  const [isOpen, setIsOpen] = useState(false);
+  const [connectedAccount] = useGlobalState('connectedAccount');
 
-            <div className='flex gap-1.5 items-center'>
-              {connectedAccount?(
-                <button  
-                disabled
-                type='button' 
-                className=' sm:block bg-white font-medium  px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-2xl text-gray-900 my-1 cursor-none'
-                >{truncate(connectedAccount,6,6,15)}</button>
-              ):(
-                <button  
-                type='button' 
-                className=' sm:block bg-white font-medium  px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-2xl text-gray-900 my-1 cursor-pointer'
-                onClick={()=>connectWallet()} 
-                >Connect Wallet</button>
-              )}
-                 {
-                opened?(
-                    <div className="sm:hidden block">
-                        <MdClose className='text-3xl' onClick={()=>handleOpened()}/>
-                    </div>
-                ):(
-                <div className="sm:hidden block">
-                    <HiMenuAlt3 className='text-3xl' onClick={()=>handleOpened()}/>
-                </div>
-                )
-              }
+  const toggleMenu = () => {
+    setIsOpen(!isOpen);
+  };
+
+  return (
+    <nav className='fixed w-full text-gray-500 border-b border-gray-200 navbar'>
+      <div className='max-w-6xl mx-auto px-4'>
+        <div className='flex items-center justify-between h-16'>
+          <div className='flex items-center'>
+            <a href='/' className='flex-shrink-0 text-3xl font-bold mr-8'>
+              CineDapp
+            </a>
+            <div className='hidden md:block'>
+              <a href='/about' className='ml-4'>
+                About
+              </a>
+              <a href='/my-tickets' className='ml-4'>
+                My Tickets
+              </a>
             </div>
           </div>
+          <div className='hidden md:block'>
+            <input
+              type='text'
+              placeholder='Search'
+              className='px-4 py-2 rounded-3xl border border-gray-400 focus:outline-none'
+            />
+            {connectedAccount ? (
+              <button className='ml-4 px-4 py-2 rounded-3xl text-white font-medium  bg-gray-500 hover:bg-gray-600 focus:outline-none'>
+                {truncate(connectedAccount, 6, 8, 17)}
+              </button>
+            ) : (
+              <button onClick={connectWallet} className='ml-4 px-4 py-2 rounded-3xl text-white font-medium  bg-gray-500 hover:bg-gray-600 focus:outline-none'>
+                Connect
+              </button>
+            )}
+          </div>
+          <div className='md:hidden'>
+            {isOpen ? (
+              <AiOutlineClose
+                className='text-3xl text-gray-800 cursor-pointer'
+                onClick={toggleMenu}
+              />
+            ) : (
+              <GiHamburgerMenu
+                className='text-3xl text-gray-800 cursor-pointer'
+                onClick={toggleMenu}
+              />
+            )}
+          </div>
         </div>
-  )
-}
+      </div>
+      {isOpen && (
+        <div className='md:hidden text-gray-500'>
+          <a
+            href='/about'
+            className='block py-2 px-4 text-sm font-medium hover:bg-gray-700'
+          >
+            About
+          </a>
+          <a
+            href='/my-tickets'
+            className='block py-2 px-4 text-sm font-medium hover:bg-gray-700'
+          >
+            My Tickets
+          </a>
+          <div className=' py-1 px-4 '>
+            <input
+              type='text'
+              placeholder='Search'
+              className='flex-grow px-4 py-2 rounded-3xl border boder-gray-700 text-sm focus:outline-none'
+            />
+            <button className=' text-gray-100 px-4 py-1 my-3 rounded-3xl bg-gray-500 hover:bg-gray-600 text-sm focus:outline-none'>
+              Connect
+            </button>
+          </div>
+        </div>
+      )}
+    </nav>
+  );
+};
 
-export default NavBar
+export default NavBar;
