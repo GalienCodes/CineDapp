@@ -14,7 +14,7 @@ import CinemaAddress from '../contracts/CinemaAddress.json';
 import TicketNFT from '../contracts/TicketNFT.json';
 import TicketNFTAddress from '../contracts/TicketNFTAddress.json';
 
-const ERC20_DECIMALS = 18;
+export const ERC20_DECIMALS = 18;
 const { ethereum } = window;
 window.web3 = new Web3(ethereum);
 window.web3 = new Web3(window.web3.currentProvider);
@@ -63,7 +63,7 @@ const getEtheriumContract = async (abi, contractAddress) => {
 
   if (connectedAccount) {
     const web3 = window.web3;
-    const contract = new web3.eth.Contract(abi.abi, contractAddress);
+    const contract = new web3.eth.Contract(abi, contractAddress);
     return contract;
   } else {
     return getGlobalState('contract');

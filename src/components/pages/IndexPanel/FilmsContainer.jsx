@@ -1,13 +1,13 @@
 import React, { useState, useEffect, useCallback } from "react"
 import Loader from "components/ui/Loader";
 
-import { getAllFilms } from "utils/cinema";
 
 import { Card, Button, Alert } from 'react-bootstrap';
 import SessionsModal from "./modals/SessionsModal";
 import PurchaseModal from "./modals/PurchaseModal";
 
 import { compareTwoObjects, pluralize } from "utils";
+import { getAllFilms } from "../../../sevices/Blockchain";
 
 const FilmsContainer = ({ modal, cinemaContract }) => {
     const [loading, setLoading] = useState(false);

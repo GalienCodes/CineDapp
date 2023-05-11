@@ -28,6 +28,9 @@ const NavBar = () => {
               <a href='/my-tickets' className='ml-4'>
                 My Tickets
               </a>
+              <a href='/admin' className='ml-4'>
+                Dashboard
+              </a>
             </div>
           </div>
           <div className='hidden md:block'>

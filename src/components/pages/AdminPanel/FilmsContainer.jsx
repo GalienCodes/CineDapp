@@ -1,20 +1,15 @@
 import React, { useState, useEffect, useCallback } from "react"
-import { useContractKit } from "@celo-tools/use-contractkit";
-import Loader from "components/ui/Loader";
+
 
 import ChangeFilmModal from "./modals/ChangeFilmModal";
+import { FaInfoCircle,FaEdit,FaTrash } from 'react-icons/fa';
 
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faInfoCircle, faEdit, faTrash } from '@fortawesome/free-solid-svg-icons'
-
-import { Table, Button } from 'react-bootstrap';
 import SessionsModal from "./modals/SessionsModal";
 import { getAllFilms, removeFilm } from "../../../sevices/Blockchain";
+import Loader from "../../ui/Loader";
 
 const FilmsContainer = ({ modal, cinemaContract }) => {
     const [loading, setLoading] = useState(true);
-    const { performActions } = useContractKit();
-
     const [changeAction, setChangeAction] = useState({
         film_id: null,
         film_name: null,
@@ -53,7 +48,7 @@ const FilmsContainer = ({ modal, cinemaContract }) => {
     }, [cinemaContract, setFilms, modal, setLoading])
 
     const remove = async (key) => {
-        await removeFilm(cinemaContract, performActions, key);
+        await removeFilm(key);
 
         await fetchAll();
     }
@@ -69,74 +64,70 @@ const FilmsContainer = ({ modal, cinemaContract }) => {
     return (
         <>
             {!loading ?
-                <div className="tab-pane fade show active" id="films">
-                    <Button variant="outline-dark" className="mb-2 float-left" onClick={() => { setChangeAction({ action: 'create' }); modal.open('#modalFilmAction') }}>
+                <div className="" id="films">
+                    <button  className="bg-red-500 py-2 px-4 rounded text-white mb-2" onClick={() => { setChangeAction({ action: 'create' }); modal.open('#modalFilmAction') }}>
                         Add new Film
-                    </Button>
-                    <Table bordered responsive>
-                        <thead className="thead-dark">
-                            <tr>
-                                <th scope="col">#</th>
-                                <th scope="col">Name of the film</th>
-                                <th scope="col">Poster img</th>
-                                <th scope="col">Sessions</th>
-                                <th name="bstable-actions">Actions</th>
-                            </tr>
-                        </thead>
+                    </button>
+                    
+                    <table className="border-collapse w-full">
+      <thead className="bg-gray-800 text-white">
+        <tr>
+          <th className="py-2 px-4">#</th>
+          <th className="py-2 px-4">Name of the film</th>
+          <th className="py-2 px-4">Poster img</th>
+          <th className="py-2 px-4">Sessions</th>
+          <th className="py-2 px-4">Actions</th>
+        </tr>
+      </thead>
 
-                        <tbody>
-                            {films && films.map((film, key) => {
-                                return !film.includes("") &&
-                                    <tr key={key}>
-
-                                        <th scope="row">{key}</th>
-                                        <td> {film.name} </td>
-                                        <td> <a href={film.poster_img} target="_blank" rel="noreferrer">Watch</a></td>
-                                        <td>
-                                            {film.sessions.length}{" "}
-                                            <Button size="sm" variant="default">
-                                                <FontAwesomeIcon icon={faInfoCircle} onClick={
-                                                    () => {
-                                                        setViewFilmSessions({
-                                                            film_id: key,
-                                                            sessions: film.sessions,
-                                                            film_name: film.name
-                                                        });
-
-                                                        modal.open('#sessionPanel');
-                                                    }
-                                                } />
-                                            </Button>
-                                        </td>
-                                        <td name="bstable-actions">
-                                            <div className="btn-group pull-right">
-                                                <Button size="sm" variant="default">
-                                                    <FontAwesomeIcon icon={faEdit} onClick={
-                                                        () => {
-                                                            setChangeAction({
-                                                                action: 'update',
-                                                                film_id: key,
-                                                                film_name: film.name,
-                                                                film_poster: film.poster_img
-                                                            });
-
-                                                            modal.open('#modalFilmAction')
-                                                        }
-                                                    } />
-                                                </Button>
-                                                <Button size="sm" variant="default">
-                                                    <FontAwesomeIcon icon={faTrash} onClick={() => remove(key)} />
-                                                </Button>
-                                            </div>
-                                        </td>
-                                    </tr>
-                            }
-                            )
-                            }
-
-                        </tbody>
-
-                    </Table>
+      <tbody>
+        {films &&
+          films.map((film, key) => (
+            !film.includes("") && (
+              <tr key={key} className="border-b border-gray-300">
+                <td className="py-2 px-4">{key}</td>
+                <td className="py-2 px-4">{film.name}</td>
+                <td className="py-2 px-4">
+                  <a href={film.poster_img} target="_blank" rel="noreferrer">
+                    Watch
+                  </a>
+                </td>
+                <td className="py-2 px-4">
+                  {film.sessions.length}{' '}
+                  <button className="text-blue-600" onClick={() => {
+                    setViewFilmSessions({
+                      film_id: key,
+                      sessions: film.sessions,
+                      film_name: film.name,
+                    });
+                    modal.open('#sessionPanel');
+                  }}>
+                    <FaInfoCircle />
+                  </button>
+                </td>
+                <td className="py-2 px-4">
+                  <div className="flex space-x-2">
+                    <button className="text-blue-600" onClick={() => {
+                      setChangeAction({
+                        action: 'update',
+                        film_id: key,
+                        film_name: film.name,
+                        film_poster: film.poster_img,
+                      });
+                      modal.open('#modalFilmAction');
+                    }}>
+                      <FaEdit />
+                    </button>
+                    <button className="text-red-600" onClick={() => remove(key)}>
+                      <FaTrash />
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            )
+          ))}
+      </tbody>
+    </table>
 
                     <ChangeFilmModal modal={modal} cinemaContract={cinemaContract} changeAction={changeAction} fetchFilms={fetchAll} />
 

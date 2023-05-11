@@ -1,15 +1,11 @@
 import React, { useState, useEffect } from "react"
 import { useContractKit } from "@celo-tools/use-contractkit";
-
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faClose } from '@fortawesome/free-solid-svg-icons'
-
-import { toast } from 'react-toastify';
+import { AiOutlineClose } from 'react-icons/ai';
+import { toast } from 'react-hot-toast'
 
 import { Button, Accordion } from 'react-bootstrap';
-import { purchaseBooking } from "utils/cinema";
-
 import { timeStampToDate, formatPriceToShow, leadingZero, pluralize } from "utils";
+import { purchaseBooking } from "../../../../sevices/Blockchain";
 
 const PurchaseModal = ({ cinemaContract, purchased_films, allFilms, setPurchasedFilms, ordered_tickets, setOrderedTickets, modal, st, removeTicket }) => {
 
@@ -106,7 +102,7 @@ const PurchaseModal = ({ cinemaContract, purchased_films, allFilms, setPurchased
                                                                 <Button key={seat_key} variant="outline-dark" className="mr-2 m-1 p-1 px-2">
                                                                     {leadingZero(seat['seat'])}{" "}
 
-                                                                    <FontAwesomeIcon icon={faClose} onClick={(e) => removeTicket(film_key, ses_key, seat['seat'])} />
+                                                                    <AiOutlineClose  onClick={(e) => removeTicket(film_key, ses_key, seat['seat'])} />
                                                                 </Button>
                                                             )}
                                                         </div>

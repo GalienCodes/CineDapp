@@ -1,11 +1,11 @@
 import { useState } from 'react';
-import { toast } from 'react-toastify';
+import { toast } from 'react-hot-toast';
 
 import { Accordion } from 'react-bootstrap';
 
 import { timeStampToDate, formatPriceToShow, leadingZero, compareWithObjectArray } from "utils";
 import { useEffect } from 'react';
-import { allCurrentTickets } from 'utils/cinema';
+import { allCurrentTickets } from '../../../../sevices/Blockchain';
 
 const SessionsModal = ({ data, cinemaContract, ordered_tickets, setOrderedTickets, setPurchasedFilms, removeTicket }) => {
 

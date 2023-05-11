@@ -1,11 +1,10 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { toast } from "react-toastify";
+import { toast } from "react-hot-toast";
 import Loader from "components/ui/Loader";
-import { Button, Card } from "react-bootstrap";
-import { formatPriceToShow, leadingZero, timeStampToDate } from "utils";
+import { Table, Button, Card } from 'react-bootstrap';
 import { useContractKit } from "@celo-tools/use-contractkit";
-import { allBookings, getAllFilms, renderQRcode, setTicketStatus } from "../../sevices/Blockchain";
+import { allBookings, formatPriceToShow, getAllFilms, leadingZero, renderQRcode, setTicketStatus, timeStampToDate } from "../../sevices/Blockchain";
 
 // view ticket info page, link from qr code ticket will open this page
 const TicketInfo = ({ cinemaContract, wallet_address, userRole }) => {
@@ -23,8 +22,6 @@ const TicketInfo = ({ cinemaContract, wallet_address, userRole }) => {
     const [film, setFilm] = useState();
 
     const [qr_code, setQrCode] = useState();
-
-    const {performActions} = useContractKit();
 
     // fetch information about a ticket
     const fetchInfo = async () => {
@@ -62,7 +59,7 @@ const TicketInfo = ({ cinemaContract, wallet_address, userRole }) => {
 
     // if owner or manager opens a page, they have access to change ticket status
     const setStatus = async (value) => {
-        await setTicketStatus(cinemaContract, performActions, address, ticket_index, value);
+        await setTicketStatus(ticket_index, value);
 
         toast.success("Success");
 

@@ -25,7 +25,7 @@ function App() {
       <Routes>
         <Route path='/' element={<LandingPage />} />
         {(userRole === 'owner' || userRole === 'manager') && (
-          <Route path='admin' element={<AdminPanel userRole={userRole} />} />
+          <Route path='/admin' element={<AdminPanel userRole={userRole} />} />
         )}
       </Routes>
 

@@ -1,19 +1,14 @@
 import React, { useState, useEffect } from "react"
 import { Accordion, Alert } from "react-bootstrap";
 
-import { useContractKit } from "@celo-tools/use-contractkit";
-import Loader from "components/ui/Loader";
-
-import { allBookings, allClients, getAllFilms, setTicketStatus } from "utils/cinema";
-
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faExternalLink, faCheckSquare, faCancel } from '@fortawesome/free-solid-svg-icons'
+import { FaExternalLinkSquareAlt,FaCheckSquare } from 'react-icons/fa';
+import { MdCancel} from 'react-icons/md';
 import TicketInfoModal from "./modals/TicketInfoModal";
+import { allBookings, allClients, getAllFilms, setTicketStatus } from "../../../sevices/Blockchain";
+import Loader from "../../ui/Loader";
 
 const TicketsContainer = ({ cinemaContract, modal }) => {
     const [loading, setLoading] = useState(false);
-
-    const { performActions } = useContractKit();
 
     const [clients, setClients] = useState([]);
 
@@ -49,7 +44,7 @@ const TicketsContainer = ({ cinemaContract, modal }) => {
     }
 
     const setUsed = async (client, ticket_index, value) => {
-        await setTicketStatus(cinemaContract, performActions, client, ticket_index, value);
+        await setTicketStatus( client, ticket_index, value);
 
         await fetchAll();
     }
@@ -95,19 +90,19 @@ const TicketsContainer = ({ cinemaContract, modal }) => {
                                             <button className="btn btn-sm info mx-1" title="View info" onClick={() =>
                                                 watchInfo(client.address, ticket)
                                             }>
-                                                <FontAwesomeIcon icon={faExternalLink}></FontAwesomeIcon>
+                                                <FaExternalLinkSquareAlt/>
                                             </button>
                                             {ticket.isUsed ?
                                                 <button className="btn btn-sm used" title="Set as unused" onClick={() =>
                                                     setUsed(client.address, ticket_key, false)
                                                 }>
-                                                    <FontAwesomeIcon icon={faCancel}></FontAwesomeIcon>
+                                                    <MdCancel/>
                                                 </button>
                                                 :
                                                 <button className="btn btn-sm ml-1" title="Set as used" onClick={() =>
                                                     setUsed(client.address, ticket_key, true)
                                                 }>
-                                                    <FontAwesomeIcon icon={faCheckSquare}></FontAwesomeIcon>
+                                                    <FaCheckSquare/>
                                                 </button>
                                             }
                                         </span>
