@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { GiHamburgerMenu } from 'react-icons/gi';
 import { AiOutlineClose } from 'react-icons/ai';
-import { setGlobalState, truncate, useGlobalState } from '../store';
-import { connectWallet } from '../sevices/Blockchain';
+import { truncate, useGlobalState } from '../../store';
+import { connectWallet } from '../../sevices/Blockchain';
+
 
 const NavBar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -40,7 +41,10 @@ const NavBar = () => {
                 {truncate(connectedAccount, 6, 8, 17)}
               </button>
             ) : (
-              <button onClick={connectWallet} className='ml-4 px-4 py-2 rounded-3xl text-white font-medium  bg-gray-500 hover:bg-gray-600 focus:outline-none'>
+              <button
+                onClick={connectWallet}
+                className='ml-4 px-4 py-2 rounded-3xl text-white font-medium  bg-gray-500 hover:bg-gray-600 focus:outline-none'
+              >
                 Connect
               </button>
             )}
@@ -80,9 +84,15 @@ const NavBar = () => {
               placeholder='Search'
               className='flex-grow px-4 py-2 rounded-3xl border boder-gray-700 text-sm focus:outline-none'
             />
-            <button className=' text-gray-100 px-4 py-1 my-3 rounded-3xl bg-gray-500 hover:bg-gray-600 text-sm focus:outline-none'>
-              Connect
-            </button>
+            {connectedAccount ? (
+              <button className=' text-gray-100 px-4 py-2 font-medium my-3 rounded-3xl bg-gray-500 hover:bg-gray-600 text-sm focus:outline-none'>
+                {truncate(connectedAccount, 6, 8, 17)}
+              </button>
+            ) : (
+              <button className=' text-gray-100 px-4 py-2 font-medium my-3 rounded-3xl bg-gray-500 hover:bg-gray-600 text-sm focus:outline-none'>
+                Connect
+              </button>
+            )}
           </div>
         </div>
       )}

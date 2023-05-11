@@ -1,70 +1,596 @@
-import Web3 from 'web3'
-import { toast } from 'react-hot-toast'
-import {getGlobalState, setAlert, setGlobalState, setLoadingMsg} from "../store/index"
+import Web3 from 'web3';
+import QRCode from 'qrcode';
+import axios from 'axios';
+import FormData from 'form-data';
+import { toast } from 'react-hot-toast';
+import {
+  getGlobalState,
+  setAlert,
+  setGlobalState,
+  setLoadingMsg,
+} from '../store/index';
+import Cinema from '../contracts/Cinema.json';
+import CinemaAddress from '../contracts/CinemaAddress.json';
+import TicketNFT from '../contracts/TicketNFT.json';
+import TicketNFTAddress from '../contracts/TicketNFTAddress.json';
 
-const { ethereum } = window
-window.web3 = new Web3(ethereum)
-window.web3 = new Web3(window.web3.currentProvider)
+const ERC20_DECIMALS = 18;
+const { ethereum } = window;
+window.web3 = new Web3(ethereum);
+window.web3 = new Web3(window.web3.currentProvider);
 
 const connectWallet = async () => {
   try {
-    if (!ethereum) { console.log('Please install Metamask')}
-    const accounts = await ethereum.request({ method: 'eth_requestAccounts' })
-    setGlobalState('connectedAccount', accounts[0]?.toLowerCase())
-    window.location.reload()
+    if (!ethereum) {
+      console.log('Please install Metamask');
+    }
+    const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
+    setGlobalState('connectedAccount', accounts[0]?.toLowerCase());
+    window.location.reload();
   } catch (error) {
-    console.log(error.message)
+    console.log(error.message);
   }
-}
+};
 
 const isWallectConnected = async () => {
   try {
-    if (!ethereum) return console.log('Please install Metamask')
-    const accounts = await ethereum.request({ method: 'eth_accounts' })
-    
-    window.ethereum.on('chainChanged', (chainId) => {
-      window.location.reload()
-    })
-    
-    window.ethereum.on('accountsChanged', async () => {
-      setGlobalState('connectedAccount', accounts[0]?.toLowerCase())
-      await isWallectConnected()
-    })
-    
-    if (accounts.length) {
-      setGlobalState('connectedAccount', accounts[0]?.toLowerCase())
-    } else {
-      toast.error('Please install Metamask')
-     
-      setGlobalState('connectedAccount','')
+    if (!ethereum) return console.log('Please install Metamask');
+    const accounts = await ethereum.request({ method: 'eth_accounts' });
 
+    window.ethereum.on('chainChanged', (chainId) => {
+      window.location.reload();
+    });
+
+    window.ethereum.on('accountsChanged', async () => {
+      setGlobalState('connectedAccount', accounts[0]?.toLowerCase());
+      await isWallectConnected();
+    });
+
+    if (accounts.length) {
+      setGlobalState('connectedAccount', accounts[0]?.toLowerCase());
+    } else {
+      toast.error('Please install Metamask');
+
+      setGlobalState('connectedAccount', '');
     }
   } catch (error) {
-    reportError(error)
+    reportError(error);
   }
-}
+};
 
-const getEtheriumContract = async () => {
-  const connectedAccount = getGlobalState('connectedAccount')
+const getEtheriumContract = async (abi, contractAddress) => {
+  const connectedAccount = getGlobalState('connectedAccount');
 
   if (connectedAccount) {
-    const web3 = window.web3
-    const networkId = await web3.eth.net.getId()
-    const networkData = abi.networks[networkId]
-
-    if (networkData) {
-      const contract = new web3.eth.Contract(abi.abi, networkData.address)
-      return contract
-    } else {
-      return null
-    }
+    const web3 = window.web3;
+    const contract = new web3.eth.Contract(abi.abi, contractAddress);
+    return contract;
   } else {
-    return getGlobalState('contract')
+    return getGlobalState('contract');
   }
-}
+};
+const CinemaContract = async () => {
+  const CinemaContract = await getEtheriumContract(
+    Cinema.abi,
+    CinemaAddress.Cinema
+  );
+  return CinemaContract;
+};
 
+const TicketNFTContract = async () => {
+  const TicketNFTContract = await getEtheriumContract(
+    TicketNFT.abi,
+    TicketNFTAddress.TicketNFT
+  );
+  return TicketNFTContract;
+};
 
-export {
-  connectWallet,
-  isWallectConnected
-}
+// QRHelper
+const { createCanvas, loadImage } = require('canvas');
+export const renderQRcode = async (address, ticket_id, type = 'blob') => {
+  // qr code size
+  const canvas = createCanvas(200, 200);
+  const ctx = canvas.getContext('2d');
+
+  ctx.font = '20px Arial';
+
+  // we set label and set it to the center
+  const textString = 'Ticket #' + ticket_id,
+    textWidth = ctx.measureText(textString).width;
+
+  ctx.fillText(textString, canvas.width / 2 - textWidth / 2, 180);
+
+  const qrOption = {
+    width: 180,
+    padding: 0,
+    margin: 0,
+  };
+
+  // qr code value
+  const qrString =
+    window.location.origin + '/ticket_info/' + address + '/ticket/' + ticket_id;
+  const bufferImage = await QRCode.toDataURL(qrString, qrOption);
+
+  return loadImage(bufferImage).then((image) => {
+    ctx.drawImage(image, 22, 5, 155, 155);
+
+    if (type === 'data') return canvas.toDataURL();
+
+    return new Promise((resolve) => {
+      canvas.toBlob(resolve);
+    });
+  });
+};
+
+// upload image to pinata, result will be ipfs hash
+export const uploadTicketImage = async (address, ticket_id) => {
+  const buffer = await renderQRcode(address, ticket_id);
+
+  try {
+    const data = new FormData();
+    data.append('file', buffer, {
+      filepath: `ticket${ticket_id}.jpg`,
+    });
+
+    const res = await axios.post(
+      'https://api.pinata.cloud/pinning/pinFileToIPFS',
+      data,
+      {
+        maxBodyLength: 'Infinity',
+        headers: {
+          'Content-Type': `multipart/form-data; boundary=${data._boundary}`,
+          Authorization: `Bearer ${process.env.REACT_APP_PINATA_BEARER_KEY}`,
+        },
+      }
+    );
+
+    return res.data.IpfsHash;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+// upload json to pinata, result will be ipfs hash
+export const uploadJson = async (ticket_id, hash) => {
+  var data = JSON.stringify({
+    pinataOptions: {
+      cidVersion: 1,
+    },
+    pinataMetadata: {
+      name: `ticket${ticket_id}_metadata`,
+    },
+    pinataContent: {
+      image: `https://gateway.pinata.cloud/ipfs/${hash}`,
+    },
+  });
+
+  var config = {
+    method: 'post',
+    url: 'https://api.pinata.cloud/pinning/pinJSONToIPFS',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${process.env.REACT_APP_PINATA_BEARER_KEY}`,
+    },
+    data: data,
+  };
+
+  const res = await axios(config);
+
+  return res.data.IpfsHash;
+};
+
+// QRHelper----end--------------------------
+
+// Cinema
+export const getUserRole = async () => {
+  const address = getGlobalState('connectedAccount');
+  const cinemaContract = await getEtheriumContract(
+    Cinema.abi,
+    CinemaAddress.Cinema
+  );
+
+  try {
+    return await cinemaContract.methods.userRole(address).call();
+  } catch (e) {
+    console.log({ e });
+  }
+};
+
+export const allCurrentTickets = async () => {
+  const cinemaContract = await getEtheriumContract(
+    Cinema.abi,
+    CinemaAddress.Cinema
+  );
+  var tickets = [];
+
+  try {
+    tickets = await cinemaContract.methods.allCurrentTickets().call();
+  } catch (e) {
+    console.log({ e });
+  }
+  return tickets;
+};
+
+export const getAllFilms = async () => {
+  const cinemaContract = await getEtheriumContract(
+    Cinema.abi,
+    CinemaAddress.Cinema
+  );
+  var films = [];
+
+  try {
+    films = await cinemaContract.methods.getAllFilms().call();
+  } catch (e) {
+    console.log({ e });
+  }
+  return films;
+};
+
+export const allBookings = async () => {
+  const user = getGlobalState('connectedAccount');
+  const cinemaContract = await getEtheriumContract(
+    Cinema.abi,
+    CinemaAddress.Cinema
+  );
+  var bookings = [];
+
+  try {
+    bookings = await cinemaContract.methods.allBookings(user).call();
+  } catch (e) {
+    console.log({ e });
+  }
+  return bookings;
+};
+
+export const allClients = async () => {
+  const cinemaContract = await getEtheriumContract(
+    Cinema.abi,
+    CinemaAddress.Cinema
+  );
+  var clients = [];
+
+  try {
+    clients = await cinemaContract.methods.allClients().call();
+  } catch (e) {
+    console.log({ e });
+  }
+
+  return clients;
+};
+
+export const allManagers = async () => {
+  const cinemaContract = await getEtheriumContract(
+    Cinema.abi,
+    CinemaAddress.Cinema
+  );
+  var managers = [];
+
+  try {
+    managers = await cinemaContract.methods.allManagers().call();
+  } catch (e) {
+    console.log({ e });
+  }
+
+  return managers;
+};
+
+export const isNewManager = async () => {
+  const address = getGlobalState('connectedAccount');
+  const cinemaContract = await getEtheriumContract(
+    Cinema.abi,
+    CinemaAddress.Cinema
+  );
+  var result;
+
+  try {
+    result = await cinemaContract.methods.isNewManager(address).call();
+  } catch (e) {
+    console.log({ e });
+  }
+
+  return result;
+};
+
+export const addFilm = async (name, poster_img) => {
+  const address = getGlobalState('connectedAccount');
+  if (address) {
+    const cinemaContract = await getEtheriumContract(
+      Cinema.abi,
+      CinemaAddress.Cinema
+    );
+    try {
+      await cinemaContract.methods
+        .addFilm(name, poster_img)
+        .send({ from: address });
+
+      return true;
+    } catch (e) {
+      console.log({ e });
+    }
+  }
+};
+
+export const removeManager = async (performActions) => {
+  const address = getGlobalState('connectedAccount');
+  const cinemaContract = await getEtheriumContract(
+    Cinema.abi,
+    CinemaAddress.Cinema
+  );
+  if (address) {
+    try {
+      await cinemaContract.methods
+        .removeManager(address)
+        .send({ from: address });
+
+      return true;
+    } catch (e) {
+      console.log({ e });
+    }
+  }
+};
+
+export const addFilmSession = async (film_id, session) => {
+  const address = getGlobalState('connectedAccount');
+  const cinemaContract = await getEtheriumContract(
+    Cinema.abi,
+    CinemaAddress.Cinema
+  );
+  if (address) {
+    try {
+      await cinemaContract.methods
+        .addFilmSession(film_id, session)
+        .send({ from: address });
+
+      return true;
+    } catch (e) {
+      console.log({ e });
+    }
+  }
+};
+
+export const updateFilmSession = async (id, film_id, session) => {
+  const address = getGlobalState('connectedAccount');
+  const cinemaContract = await getEtheriumContract(
+    Cinema.abi,
+    CinemaAddress.Cinema
+  );
+  if (address) {
+    try {
+      await cinemaContract.methods
+        .updateFilmSession(id, film_id, session)
+        .send({ from: address });
+
+      return true;
+    } catch (e) {
+      console.log({ e });
+    }
+  }
+};
+
+export const setTicketStatus = async (client, ticket_index, value) => {
+  const address = getGlobalState('connectedAccount');
+  const cinemaContract = await getEtheriumContract(
+    Cinema.abi,
+    CinemaAddress.Cinema
+  );
+  if (address) {
+    try {
+      await cinemaContract.methods
+        .setTicketStatus(client, ticket_index, value)
+        .send({ from: address });
+
+      return true;
+    } catch (e) {
+      console.log({ e });
+    }
+  }
+};
+
+export const addManager = async () => {
+  const address = getGlobalState('connectedAccount');
+  const cinemaContract = await getEtheriumContract(
+    Cinema.abi,
+    CinemaAddress.Cinema
+  );
+  if (address) {
+    try {
+      await cinemaContract.methods.addManager(address).send({ from: address });
+
+      return true;
+    } catch (e) {
+      console.log({ e });
+    }
+  }
+};
+
+export const updateFilm = async (id, name, poster_img) => {
+  const address = getGlobalState('connectedAccount');
+  const cinemaContract = await getEtheriumContract(
+    Cinema.abi,
+    CinemaAddress.Cinema
+  );
+  if (address) {
+    try {
+      await cinemaContract.methods
+        .updateFilm(id, name, poster_img)
+        .send({ from: address });
+
+      return true;
+    } catch (e) {
+      console.log({ e });
+    }
+  }
+};
+
+export const purchaseBooking = async (new_bookings, total) => {
+  const address = getGlobalState('connectedAccount');
+  const cinemaContract = await getEtheriumContract(
+    Cinema.abi,
+    CinemaAddress.Cinema
+  );
+  var ids = [];
+  if (address) {
+    try {
+      // we are going to calculate new tickets ids
+      const counter = await cinemaContract.methods.tickets_counter().call();
+
+      ids.push(parseInt(counter));
+
+      for (var i = new_bookings.length - 1; i--; )
+        ids.push(ids[ids.length - 1] + 1);
+
+      await cinemaContract.methods
+        .purchaseBooking(address, new_bookings)
+        .send({ from: address, value: total })
+        .then(async () => {
+          // this needs to immediately upload our images
+          // in general, uploading takes some time and i thought uploading right after purchase will help
+          // but sometimes images are not avaiable for 5-30 minutes, so we will notice this
+          for (let i in ids) {
+            const image_hash = await uploadTicketImage(address, ids[i]);
+
+            await uploadJson(ids[i], image_hash);
+          }
+        });
+
+      return true;
+    } catch (e) {
+      console.log({ e });
+
+      return false;
+    }
+  }
+};
+
+const removeFilm = async (id) => {
+  const address = getGlobalState('connectedAccount');
+  const cinemaContract = await getEtheriumContract(
+    Cinema.abi,
+    CinemaAddress.Cinema
+  );
+  if (address) {
+    try {
+      await cinemaContract.methods.removeFilm(id).send({ from: address });
+    } catch (e) {
+      console.log({ e });
+    }
+  }
+};
+
+const removeSession = async (id, film_id) => {
+  const address = getGlobalState('connectedAccount');
+  if (address) {
+    const cinemaContract = await getEtheriumContract(
+      Cinema.abi,
+      CinemaAddress.Cinema
+    );
+    try {
+      await cinemaContract.methods
+        .removeSession(id, film_id)
+        .send({ from: address });
+    } catch (e) {
+      console.log({ e });
+    }
+  }
+};
+
+// Cinema ----end----------------
+
+// index
+// format a wallet address
+export const truncateAddress = (address) => {
+  if (!address) return;
+  return (
+    address.slice(0, 5) +
+    '...' +
+    address.slice(address.length - 4, address.length)
+  );
+};
+
+// convert from big number
+export const formatBigNumber = (num) => {
+  if (!num) return;
+  return num.shiftedBy(-ERC20_DECIMALS).toFixed(2);
+};
+
+export const leadingZero = (num) => ('0' + num).slice(-2);
+
+// Function converts unix timestamp to string date
+export const timeStampToDate = (stamp) => {
+  const d = new Date(parseInt(stamp));
+
+  return (
+    d.getFullYear() +
+    '-' +
+    ('0' + (d.getMonth() + 1)) +
+    '-' +
+    leadingZero(d.getDate()) +
+    ' ' +
+    leadingZero(d.getHours()) +
+    ':' +
+    leadingZero(d.getMinutes())
+  );
+};
+
+export const formatPriceToShow = (value) =>
+  parseInt(value) / Math.pow(10, ERC20_DECIMALS);
+
+export const pluralize = (count, noun, suffix = 's') =>
+  `${count} ${noun}${count !== 1 ? suffix : ''}`;
+
+// finds object in array of object, if it is found returns true
+export const compareWithObjectArray = (array, obj) => {
+  return array.some((element) => {
+    if (JSON.stringify(element) === JSON.stringify(obj)) {
+      return true;
+    }
+
+    return false;
+  });
+};
+
+export const compareTwoObjects = (obj1, obj2) => {
+  return JSON.stringify(obj1) === JSON.stringify(obj2);
+};
+
+// ticketnft
+
+export const mintsByUser = async () => {
+  const address = getGlobalState('connectedAccount');
+  const ticketNFTContract = await getEtheriumContract(
+    TicketNFT.abi,
+    TicketNFTAddress.TicketNFT
+  );
+
+  var mints = [];
+  if(address){
+    try {
+      mints = await ticketNFTContract.methods.mintsByUser(address).call();
+    } catch (e) {
+      console.log({ e });
+    }
+  }
+
+  return mints;
+};
+
+export const safeMint = async (ticket_id, uri) => {
+  const ticketNFTContract = await getEtheriumContract(
+    TicketNFT.abi,
+    TicketNFTAddress.TicketNFT
+  );
+  const address = getGlobalState('connectedAccount');
+  if (address) {
+    try {
+      await ticketNFTContract.methods
+        .safeMint(address, ticket_id, uri)
+        .send({ from: address });
+
+      return true;
+    } catch (e) {
+      console.log({ e });
+    }
+  }
+};
+
+export { connectWallet, isWallectConnected, removeSession, removeFilm };
