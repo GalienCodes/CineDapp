@@ -7,9 +7,12 @@ import { FaInfoCircle,FaEdit,FaTrash } from 'react-icons/fa';
 import SessionsModal from "./modals/SessionsModal";
 import { getAllFilms, removeFilm } from "../../../sevices/Blockchain";
 import Loader from "../../ui/Loader";
+import { useGlobalState } from "../../../store";
 
 const FilmsContainer = ({ modal, cinemaContract }) => {
     const [loading, setLoading] = useState(true);
+    const [allFilms] = useGlobalState('allFilms')
+    console.log("allFilms", allFilms);
     const [changeAction, setChangeAction] = useState({
         film_id: null,
         film_name: null,
@@ -25,19 +28,18 @@ const FilmsContainer = ({ modal, cinemaContract }) => {
         sessions: []
     });
 
-    const fetchAll = useCallback(async (openModal = null, current_film = null) => {
+    const fetchAll = async (openModal = null, current_film = null) => {
         setLoading(true);
 
-        const films_ = await getAllFilms(cinemaContract);
 
-        setFilms(films_);
+        setFilms(allFilms);
 
         if (openModal && current_film) {
 
             setViewFilmSessions({
                 film_id: current_film,
-                film_name: films_[current_film].name,
-                sessions: films_[current_film].sessions
+                film_name: allFilms.name,
+                sessions: allFilms.sessions
             });
 
             modal.open(openModal);
@@ -45,7 +47,7 @@ const FilmsContainer = ({ modal, cinemaContract }) => {
 
         setLoading(false);
 
-    }, [cinemaContract, setFilms, modal, setLoading])
+    }
 
     const remove = async (key) => {
         await removeFilm(key);
@@ -53,10 +55,10 @@ const FilmsContainer = ({ modal, cinemaContract }) => {
         await fetchAll();
     }
 
-    useEffect(() => {
-        if (cinemaContract)
-            fetchAll();
+   
 
+    useEffect(() => {
+         fetchAll();
         return setLoading(false);
 
     }, [cinemaContract, fetchAll]);
@@ -83,7 +85,7 @@ const FilmsContainer = ({ modal, cinemaContract }) => {
       <tbody>
         {films &&
           films.map((film, key) => (
-            !film.includes("") && (
+            film.length != 0 && (
               <tr key={key} className="border-b border-gray-300">
                 <td className="py-2 px-4">{key}</td>
                 <td className="py-2 px-4">{film.name}</td>

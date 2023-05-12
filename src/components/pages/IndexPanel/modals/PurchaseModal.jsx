@@ -1,31 +1,27 @@
 import React, { useState, useEffect } from "react"
-import { useContractKit } from "@celo-tools/use-contractkit";
 import { AiOutlineClose } from 'react-icons/ai';
 import { toast } from 'react-hot-toast'
 
 import { Button, Accordion } from 'react-bootstrap';
-import { timeStampToDate, formatPriceToShow, leadingZero, pluralize } from "utils";
-import { purchaseBooking } from "../../../../sevices/Blockchain";
+import { formatPriceToShow, leadingZero, pluralize, purchaseBooking, timeStampToDate } from "../../../../sevices/Blockchain";
 
-const PurchaseModal = ({ cinemaContract, purchased_films, allFilms, setPurchasedFilms, ordered_tickets, setOrderedTickets, modal, st, removeTicket }) => {
+const PurchaseModal = ({ purchased_films, allFilms, setPurchasedFilms, ordered_tickets, setOrderedTickets, modal, st, removeTicket }) => {
 
     const [totalPrice, setTotalPrice] = useState(0);
 
-    const { performActions } = useContractKit();
-
-    const open = purchased_films.findIndex((el) => el !== undefined);
+    const open = purchased_films?.findIndex((el) => el !== undefined);
 
     useEffect(() => {
-        if (purchased_films.length) {
+        if (purchased_films?.length) {
 
-            if (!ordered_tickets.length) {
+            if (!ordered_tickets?.length) {
                 modal.close();
                 return;
             }
 
             let temp_price = 0;
 
-            ordered_tickets.forEach((ticket) => {
+            ordered_tickets?.forEach((ticket) => {
                 temp_price += parseInt(allFilms[ticket.film_id].sessions[ticket.session_id].seat_price);
             });
 
@@ -43,7 +39,7 @@ const PurchaseModal = ({ cinemaContract, purchased_films, allFilms, setPurchased
         const timestamp_ = Date.now();
 
         // recreate an object of purchases
-        ordered_tickets.forEach((element) => {
+        ordered_tickets?.forEach((element) => {
 
             const session = allFilms[element.film_id].sessions[element.session_id];
 
@@ -58,7 +54,7 @@ const PurchaseModal = ({ cinemaContract, purchased_films, allFilms, setPurchased
             });
         });
         
-        const result = await purchaseBooking(cinemaContract, performActions, purchases, totalPrice.toString());
+        const result = await purchaseBooking( purchases, totalPrice.toString());
 
         if (result) {
             setPurchasedFilms([]);
@@ -68,13 +64,13 @@ const PurchaseModal = ({ cinemaContract, purchased_films, allFilms, setPurchased
         } else {
             toast.error("Error, watch console to see details");
 
-            modal.open('#purchaseSessions')
+            modal?.open('#purchaseSessions')
         }
     }
 
     return (
         <>
-            {!!purchased_films.length && !!ordered_tickets.length &&
+            {!!purchased_films?.length && !!ordered_tickets?.length &&
                 <div className="hystmodal hystmodal--simple" id="purchaseSessions" aria-hidden="true">
                     <div className="hystmodal__wrap">
                         <div className="hystmodal__window hystmodal__window--long half" role="dialog" aria-modal="true">

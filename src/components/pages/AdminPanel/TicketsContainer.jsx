@@ -4,10 +4,15 @@ import { Accordion, Alert } from "react-bootstrap";
 import { FaExternalLinkSquareAlt,FaCheckSquare } from 'react-icons/fa';
 import { MdCancel} from 'react-icons/md';
 import TicketInfoModal from "./modals/TicketInfoModal";
-import { allBookings, allClients, getAllFilms, setTicketStatus } from "../../../sevices/Blockchain";
+import { setTicketStatus } from "../../../sevices/Blockchain";
 import Loader from "../../ui/Loader";
+import { useGlobalState } from "../../../store";
 
 const TicketsContainer = ({ cinemaContract, modal }) => {
+    const [bookings]= useGlobalState('bookings')
+    const [allClients]= useGlobalState('allClients')
+    const [allFilms]= useGlobalState('allFilms')
+
     const [loading, setLoading] = useState(false);
 
     const [clients, setClients] = useState([]);
@@ -27,11 +32,10 @@ const TicketsContainer = ({ cinemaContract, modal }) => {
 
         let temp_clients = [];
 
-        const temp_ = await allClients(cinemaContract);
+        const temp_ =  allClients;
 
         for (let el in temp_) {
-            const boookings = await allBookings(cinemaContract, temp_[el]);
-
+            const boookings = bookings;
             temp_clients.push({
                 address: temp_[el],
                 tickets: boookings
@@ -50,9 +54,8 @@ const TicketsContainer = ({ cinemaContract, modal }) => {
     }
 
 
-    const watchInfo = async (client, ticket) => {
-        const film = (await getAllFilms(cinemaContract))[ticket.film_id];
-
+    const watchInfo = (client, ticket) => {
+        const film = allFilms[ticket.film_id];
         setWatchTicket({
             ticket_id: ticket.ticket_id,
             film_id: ticket.film_id,

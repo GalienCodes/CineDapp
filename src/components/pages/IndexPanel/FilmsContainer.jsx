@@ -1,179 +1,108 @@
-import React, { useState, useEffect, useCallback } from "react"
-import Loader from "components/ui/Loader";
+import React, { useState, useEffect, useCallback } from 'react';
+import SessionsModal from './modals/SessionsModal';
+import PurchaseModal from './modals/PurchaseModal';
+import { compareTwoObjects, pluralize } from '../../../sevices/Blockchain';
+import Loader from '../../ui/Loader';
+import { getGlobalState, setGlobalState, useGlobalState } from '../../../store';
+import AllFilms from '../../ui/AllFilms';
 
+const FilmsContainer = ({ modal }) => {
+  const [allFilms] = useGlobalState('allFilms');
+  const [loadFilms] = useGlobalState('loadFilms');
+  const [films] = useGlobalState('films');
+  const [ordered_tickets] = useGlobalState('ordered_tickets');
+  // const [purchased_films] = useGlobalState('purchased_films');
 
-import { Card, Button, Alert } from 'react-bootstrap';
-import SessionsModal from "./modals/SessionsModal";
-import PurchaseModal from "./modals/PurchaseModal";
+  // two variables that are almost the same
+  // but we need purchased_films variable to change selection of a specific seat by a user
 
-import { compareTwoObjects, pluralize } from "utils";
-import { getAllFilms } from "../../../sevices/Blockchain";
+  // force rerender component
+  const [st, updateState] = React.useState();
+  useGlobalState('st', st);
+  const forceUpdate = React.useCallback(() => updateState({}), []);
 
-const FilmsContainer = ({ modal, cinemaContract }) => {
-    const [loading, setLoading] = useState(false);
-
-    const [films, setFilms] = useState(null);
-
-    const [viewFilmSessions, setViewFilmSessions] = useState({
-        film_id: null,
-        film_name: null,
-        sessions: []
-    });
-
-    // two variables that are almost the same
-    // but we need purchased_films variable to change selection of a specific seat by a user
-    const [ordered_tickets, setOrderedTickets] = useState([]);
-    const [purchased_films, setPurchasedFilms] = useState([]);
-
-    // force rerender component
-    const [st, updateState] = React.useState();
-    const forceUpdate = React.useCallback(() => updateState({}), []);
-
-    // fetching all films
-    const fetchAll = useCallback(async () => {
-        const films_ = await getAllFilms(cinemaContract);
-
-        let temp = [];
-
-        // check if film is not empty
-        // because in solidity we can't delete an element of array, it will be just empty
-        films_.forEach((element, key) =>{
-            if(!element.includes(""))
-                temp[key] = element;
-        })
-
-        setFilms(temp);
-    }, [cinemaContract, setFilms])
-
-    useEffect(() => {
-        setLoading(true);
-
-        if (cinemaContract) {
-            fetchAll();
-
-            return setLoading(false);
-        }
-
-    }, [cinemaContract, purchased_films, loading]);
-
-    // remove ticket from purchases list function
-    const removeTicket = (film_id, session_id, seat) => {
-        
-        // we need to copy an array, purchased_films is still read-only
-        let temp_ = purchased_films;
-
-        // remove ticket from purchases list
-        setOrderedTickets(ordered_tickets.filter((elem) => !compareTwoObjects(elem, {
-            film_id,
-            session_id,
-            seat
-        })));
-
-        // remove purchased seat object
-        temp_[film_id][session_id] = (temp_[film_id][session_id].filter((elem) => elem.seat !== seat));
-
-        // remove purchased session and film properties 
-        // if they are empty (we already remove all seats from specific session and film)
-        if (!temp_[film_id][session_id].length)
-            temp_[film_id].splice(session_id, 1);
-
-        if (!temp_[film_id].length)
-            temp_.splice(film_id, 1);
-
-        setPurchasedFilms(temp_);
-
-        // force update component to reload a modal window
-        // it will not reload even after we change it's state
-        forceUpdate();
-    }
-
-    return (
+  // remove ticket from purchases list function
+ 
+  return (
+    <>
+      {!loadFilms ? (
         <>
-            {!loading ?
-                <>
-                    {ordered_tickets.length !== 0 &&
-                        <Alert className="col-9 mx-auto wave-btn" style={{ backgroundColor: "black" }}>
-                            <div>
-                                <span style={{ verticalAlign: "middle", color: "white" }}>
-                                    You have selected {pluralize(ordered_tickets.length, "seat")}
-                                </span>
-                                <Button variant="light" className="float-end" onClick={() => modal.open('#purchaseSessions')}>Purchase</Button>
+          {ordered_tickets.length !== 0 && (
+            <div
+              className='col-9 mx-auto wave-btn rounded' 
+            >
+              <div className='flex gap-2 justify-between  items-center bg-white text-gray-500 px-4 py-2'>
+                <p className='text-gray-500'>
+                  You have selected
+                  <span className='font-bold  ml-2'>
+                    {pluralize(ordered_tickets.length, 'seat')}
+                  </span>
+                </p>
+                <button
+                  className='px-2 py-1 rounded-3xl bg-gray-500 hover:bg-gray-600 text-white'
+                  onClick={() => setGlobalState('showPurchase', 'scale-100')}
+                >
+                  Purchase
+                </button>
+              </div>
+            </div>
+          )}
 
-                            </div>
-                        </Alert>
-                    }
+          <div className='grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-4 lg:gap-3 py-2.5 mx-4'>
+            {films?.map((film, key) => {
+                  setGlobalState('viewFilmSessions',{
+                    film_id: key,
+                    film_name: film.name,
+                    sessions: film.sessions,
+                  });
+              return film.length != 0 && <Card film={film}  key={key}/>;
+            })}
 
-                    <div className="row col-md-9 mx-auto">
-                        <span style={{ display: "contents" }}>
-                            {films && films.map((film, key) => {
-                                return !film.includes("") &&
+            {(!films || !films?.length) && (
+              <div className='mx-auto'>There are no films..</div>
+            )}
+          </div>
 
-                                    <div className="col-md-4 mb-3 d-flex align-items-stretch films_container" key={key}>
-                                        <Card className="card-deck p-0 mx-2 my-2 box-shadow">
-
-                                            <Card.Img variant="top" src={film.poster_img} />
-
-                                            <Card.Header>
-                                                <h6 className="my-0 font-weight-normal">
-                                                    {film.name}
-                                                </h6>
-                                            </Card.Header>
-
-                                            <Button variant="outline-primary" size="lg" className="mt-auto btn-block" onClick={
-                                                () => {
-                                                    setViewFilmSessions({
-                                                        film_id: key,
-                                                        film_name: film.name,
-                                                        sessions: film.sessions
-                                                    });
-                                                    modal.open('#watchSessions');
-                                                }
-                                            }>
-                                                Watch sessions
-                                            </Button>
-
-                                        </Card>
-                                    </div>
-                            })}
-                            
-                            {(!films || !films.length) &&
-                                <div className="mx-auto">
-                                    There are no films..
-                                </div>
-                            }
-                        </span>
-                    </div>
-                    {
-                    /* sessions of a film modal*/}
-                    <SessionsModal
-                        purchased_films={purchased_films}
-                        setPurchasedFilms={setPurchasedFilms}
-                        ordered_tickets={ordered_tickets}
-                        setOrderedTickets={setOrderedTickets}
-                        data={viewFilmSessions}
-                        cinemaContract={cinemaContract}
-                        removeTicket={removeTicket}
-                    />
-                    {/* purchase modal */}
-                    <PurchaseModal
-                        ordered_tickets={ordered_tickets}
-                        setOrderedTickets={setOrderedTickets}
-                        cinemaContract={cinemaContract}
-                        purchased_films={purchased_films}
-                        setPurchasedFilms={setPurchasedFilms}
-                        allFilms={films}
-                        modal={modal}
-                        st={st}
-                        removeTicket={removeTicket}
-                    />
-                </>
-                :
-                <Loader />
-            }
-
+          {/* purchase modal */}
+          <PurchaseModal
+            // allFilms={films}
+            modal={modal}
+            st={st}
+          />
         </>
-
-    );
+      ) : (
+        <Loader />
+      )}
+    </>
+  );
 };
 
 export default FilmsContainer;
+
+const Card = ({ film, key }) => {
+  const setFilm = () => {
+    setGlobalState('film', film);
+    setGlobalState('showModal', 'scale-100');
+  };
+  return (
+    <div className='p-4 border rounded-xl shadow-sm font-globalFont'>
+      <img
+        className='rounded-md h-80 sm:h-80 w-full object-cover border'
+        src={film?.poster_img}
+        alt='film card'
+      />
+      <h2 className='my-2  text-gray-500 font-medium capitalize'>
+        {' '}
+        {film?.name}
+      </h2>
+      <button
+        className='px-6 py-3 shadow-md text-gray-600 rounded-xl w-full'
+        onClick={() => {
+          setFilm();
+        }}
+      >
+        View Details
+      </button>
+    </div>
+  );
+};

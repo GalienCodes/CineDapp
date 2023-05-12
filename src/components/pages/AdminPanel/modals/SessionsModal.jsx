@@ -55,7 +55,7 @@ const SessionsModal = ({ fetchFilms, data, modal }) => {
               <tbody>
                 {data.sessions &&
                   data.sessions.map((session, key) =>
-                    !session.includes('0') ? (
+                    session.length != 0  ? (
                       <tr key={key} className="border-b border-gray-300">
                         <td className="py-2 px-4">{key}</td>
                         <td className="py-2 px-4">{timeStampToDate(session.datetime)}</td>

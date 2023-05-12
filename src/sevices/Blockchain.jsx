@@ -211,6 +211,21 @@ export const allCurrentTickets = async () => {
   return tickets;
 };
 
+export const structureFilms = (films) => {
+  return films?.map((film) => ({
+    name: film.name,
+    poster_img: film.poster_img,
+    sessions: structureSessions(film?.sessions),
+  }));
+};
+
+const structureSessions = (sessions) => {
+  return sessions?.map((s) => ({
+    datetime: s.datetime,
+    seat_price: s.seat_price,
+    seats_count: s.seats_count,
+  }));
+};
 export const getAllFilms = async () => {
   const cinemaContract = await getEtheriumContract(
     Cinema.abi,
@@ -220,6 +235,7 @@ export const getAllFilms = async () => {
 
   try {
     films = await cinemaContract.methods.getAllFilms().call();
+    setGlobalState('allFilms', (films));
   } catch (e) {
     console.log({ e });
   }
@@ -233,11 +249,14 @@ export const allBookings = async () => {
     CinemaAddress.Cinema
   );
   var bookings = [];
-
-  try {
-    bookings = await cinemaContract.methods.allBookings(user).call();
-  } catch (e) {
-    console.log({ e });
+  if (user) {
+    try {
+      bookings = await cinemaContract.methods.allBookings(user).call();
+      setGlobalState('bookings', bookings);
+      console.log('bookings', bookings);
+    } catch (e) {
+      console.log({ e });
+    }
   }
   return bookings;
 };
@@ -251,6 +270,8 @@ export const allClients = async () => {
 
   try {
     clients = await cinemaContract.methods.allClients().call();
+    console.log('allClients', allClients);
+    setGlobalState('allClients', allClients);
   } catch (e) {
     console.log({ e });
   }
@@ -274,18 +295,19 @@ export const allManagers = async () => {
   return managers;
 };
 
-export const isNewManager = async () => {
+export const isNewManager = async (addressInput) => {
   const address = getGlobalState('connectedAccount');
   const cinemaContract = await getEtheriumContract(
     Cinema.abi,
     CinemaAddress.Cinema
   );
   var result;
-
-  try {
-    result = await cinemaContract.methods.isNewManager(address).call();
-  } catch (e) {
-    console.log({ e });
+  if (address) {
+    try {
+      result = await cinemaContract.methods.isNewManager(addressInput).call();
+    } catch (e) {
+      console.log({ e });
+    }
   }
 
   return result;
@@ -563,7 +585,7 @@ export const mintsByUser = async () => {
   );
 
   var mints = [];
-  if(address){
+  if (address) {
     try {
       mints = await ticketNFTContract.methods.mintsByUser(address).call();
     } catch (e) {
@@ -591,6 +613,48 @@ export const safeMint = async (ticket_id, uri) => {
       console.log({ e });
     }
   }
+};
+
+// remove ticket
+
+export const removeTicket = (film_id, session_id, seat) => {
+  console.log("remove");
+  const ordered_tickets = getGlobalState('ordered_tickets');
+  const purchased_films = getGlobalState('purchased_films');
+
+  // we need to copy an array, purchased_films is still read-only
+  let temp_ = [...purchased_films];
+  console.log(film_id, session_id, seat);
+  console.log(
+    "temp_",temp_
+  );
+
+  // remove ticket from purchases list
+  setGlobalState(
+    'ordered_tickets',
+    ordered_tickets.filter(
+      (elem) =>
+        !compareTwoObjects(elem, {
+          film_id,
+          session_id,
+          seat,
+        })
+    )
+  );
+
+  // remove purchased seat object
+  temp_[film_id][session_id] = temp_[film_id][session_id].filter(
+    (elem) => elem.seat !== seat
+  );
+
+  // remove purchased session and film properties
+  // if they are empty (we already remove all seats from specific session and film)
+  if (!temp_[film_id][session_id].length)
+    temp_[film_id].splice(session_id, 1);
+
+  if (!temp_[film_id].length) temp_.splice(film_id, 1);
+
+  setGlobalState('purchased_films', temp_);
 };
 
 export { connectWallet, isWallectConnected, removeSession, removeFilm };

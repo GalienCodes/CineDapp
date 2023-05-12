@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import {  Form, InputGroup, Alert } from 'react-bootstrap';
+import Web3 from 'web3';
+import { Form, InputGroup, Alert } from 'react-bootstrap';
 import { toast } from 'react-hot-toast';
 import { MdCancel } from 'react-icons/md';
 import {
@@ -10,7 +11,11 @@ import {
 } from '../../../sevices/Blockchain';
 import Loader from '../../ui/Loader';
 
-const ManagersContainer = ({ cinemaContract }) => {
+const { ethereum } = window;
+window.web3 = new Web3(ethereum);
+window.web3 = new Web3(window.web3.currentProvider);
+
+const ManagersContainer = () => {
   const [loading, setLoading] = useState(true);
 
   const [addressInput, setAddressInput] = useState('');
@@ -18,14 +23,13 @@ const ManagersContainer = ({ cinemaContract }) => {
   const [managers, setManagers] = useState(null);
 
   const fetchManagers = async () => {
+    const web3 = window.web3;
     let temp = [];
 
     const all_managers = await allManagers();
 
     for (let key in all_managers) {
-      // 2x
-      // if (!kit.web3.utils.toBN(all_managers[key]).isZero()) {
-      if (all_managers[key].isZero()) {
+      if (!web3.utils.toBN(all_managers[key])?.isZero()) {
         temp.push(all_managers[key]);
       }
     }
@@ -34,10 +38,10 @@ const ManagersContainer = ({ cinemaContract }) => {
   };
 
   useEffect(() => {
-    if (cinemaContract) fetchManagers();
+    fetchManagers();
 
     return setLoading(false);
-  }, [cinemaContract]);
+  }, []);
 
   const remove = async (address) => {
     const result = await removeManager();
@@ -55,7 +59,7 @@ const ManagersContainer = ({ cinemaContract }) => {
     e.preventDefault();
 
     if (addressInput) {
-      if (await isNewManager(cinemaContract, addressInput)) {
+      if (await isNewManager(addressInput)) {
         if (await addManager(addressInput)) {
           toast.success('Success');
 
@@ -99,29 +103,33 @@ const ManagersContainer = ({ cinemaContract }) => {
             </InputGroup>
           </Form>
 
-          <hr  className='py-2'/>
+          <hr className='py-2' />
 
           <div className='text-center mb-3'>
-            <h1 className='font-medium text-2xl text-gray-600'>Managers list</h1>
+            <h1 className='font-medium text-2xl text-gray-600'>
+              Managers list
+            </h1>
           </div>
 
           <div className='col-md-8 mx-auto'>
             {managers && managers.length ? (
               managers.map((address, key) => (
-                <Alert
-                  variant='secondary'
+                <div
                   key={key}
-                  className='text-left my-1 py-1'
+                  className='text-center bg-white border my-1 rounded flex justify-between py-2 px-3 items-center gap-2'
                 >
-                  {address}
+                  <p className='font-medium text-gray-500'>{address}</p>
 
                   <button
                     className='btn btn-sm float-end p-0'
                     title='Remove manager'
                   >
-                    <MdCancel onClick={() => remove(address)}></MdCancel>
+                    <MdCancel
+                      className='text-red-600 text-2xl'
+                      onClick={() => remove(address)}
+                    ></MdCancel>
                   </button>
-                </Alert>
+                </div>
               ))
             ) : (
               <div className='text-center'>
