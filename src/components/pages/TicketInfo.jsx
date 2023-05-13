@@ -3,7 +3,6 @@ import { useParams } from "react-router-dom";
 import { toast } from "react-hot-toast";
 import Loader from "components/ui/Loader";
 import { Table, Button, Card } from 'react-bootstrap';
-import { useContractKit } from "@celo-tools/use-contractkit";
 import { allBookings, formatPriceToShow, getAllFilms, leadingZero, renderQRcode, setTicketStatus, timeStampToDate } from "../../sevices/Blockchain";
 
 // view ticket info page, link from qr code ticket will open this page

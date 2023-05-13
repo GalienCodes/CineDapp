@@ -1,10 +1,9 @@
-import moment from 'moment';
-import { useEffect } from 'react';
 import { createGlobalState } from "react-hooks-global-state";
 
 const {setGlobalState, useGlobalState, getGlobalState }=createGlobalState({
   showModal: 'scale-0',
   showPurchase: 'scale-0',
+  showQr: 'scale-0',
   started:false,
   alert: { show: false, msg: '', color: '' },
   loading: { show: false, msg: '' },
@@ -25,6 +24,7 @@ const {setGlobalState, useGlobalState, getGlobalState }=createGlobalState({
   allClients: [],
   bookings: [],
   allFilms: [],
+  tickets:null,
   contract: null,
 });
 

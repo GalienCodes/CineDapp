@@ -20,7 +20,6 @@ const ShowPurchase = () => {
   const [purchased_films] = useGlobalState('purchased_films');
   const [allFilms] = useGlobalState('allFilms');
   const [ordered_tickets] = useGlobalState('ordered_tickets');
-  // setPurchasedFilms, , setOrderedTickets, modal, st, removeTicket
   const [totalPrice, setTotalPrice] = useState(0);
   const open = purchased_films?.findIndex((el) => el !== undefined);
 
@@ -41,7 +40,7 @@ const ShowPurchase = () => {
 
       setTotalPrice(temp_price);
     }
-  }, [ purchased_films, ordered_tickets]);
+  }, [purchased_films, ordered_tickets]);
 
   const purchase = async () => {
     let purchases = [];
@@ -68,11 +67,8 @@ const ShowPurchase = () => {
     const result = await purchaseBooking(purchases, totalPrice.toString());
 
     if (result) {
-      
-      purchased_films
-      ordered_tickets
-      setPurchasedFilms([]);
-      setOrderedTickets([]);
+      setGlobalState('purchased_films', []);
+      setGlobalState('ordered_tickets', []);
 
       toast.success('Success, watch your profile to check tickets.');
     } else {
@@ -88,7 +84,7 @@ const ShowPurchase = () => {
       flex items-center justify-center bg-black bg-opacity-30 
       transform duration-300 font-globalFont ${showPurchase}`}
     >
-      <div className='bg-gray-50 shadow-lg rounded-xl text-gray-400 w-11/12 md:w-3/6 h-7/12 px-4 pt-3 pb-4'>
+      <div className='bg-gray-50 shadow-lg rounded-xl text-gray-400 w-11/12 md:w-4/12 h-7/12 px-4 pt-3 pb-4'>
         <div className='flex items-center justify-between'>
           <h2 className='text-xl mb-2 font-globalFont font-semibold text-gray-400 capitalize'>
             Perchase details
@@ -103,77 +99,70 @@ const ShowPurchase = () => {
         {/* ================================================================================================ */}
         {!!purchased_films?.length && !!ordered_tickets?.length && (
           <div className=''>
-            <div className=''>
-              <div className=''>
-                <div className=''>
-                  <Accordion className='mb-2' defaultActiveKey={parseInt(open)}>
-                    {purchased_films &&
-                      purchased_films.map(
-                        (film, film_key) =>
-                          !!film.length && (
-                            <Accordion.Item eventKey={film_key} key={film_key}>
-                              <Accordion.Header>
-                                {allFilms[film_key].name}
-                              </Accordion.Header>
+            <Accordion className='' defaultActiveKey={parseInt(open)}>
+              {purchased_films &&
+                purchased_films.map(
+                  (film, film_key) =>
+                    !!film.length && (
+                      <Accordion.Item eventKey={film_key} key={film_key}>
+                        <Accordion.Header className='font-noraml  text-gray-400'>
+                          <p className='text-xl capitalize'>
+                            {allFilms[film_key].name}
+                          </p>
+                        </Accordion.Header>
 
-                              <Accordion.Body>
-                                {film &&
-                                  film.map(
-                                    (session, ses_key) =>
-                                      !!session.length && (
-                                        <span key={ses_key}>
-                                          {timeStampToDate(
-                                            allFilms[film_key]['sessions'][
-                                              ses_key
-                                            ]
-                                          )}{' '}
-                                          - {pluralize(session.length, 'seat')}
-                                          <div id='purchased_seats'>
-                                            {session &&
-                                              session.map((seat, seat_key) => (
-                                                <Button
-                                                  key={seat_key}
-                                                  variant='outline-dark'
-                                                  className='mr-2 m-1 p-1 px-2'
-                                                >
-                                                  {leadingZero(seat['seat'])}{' '}
-                                                  <AiOutlineClose
-                                                    onClick={(e) =>
-                                                      removeTicket(
-                                                        film_key,
-                                                        ses_key,
-                                                        seat['seat']
-                                                      )
-                                                    }
-                                                  />
-                                                </Button>
-                                              ))}
-                                          </div>
-                                        </span>
-                                      )
-                                  )}
-                              </Accordion.Body>
-                            </Accordion.Item>
-                          )
-                      )}
-                  </Accordion>
+                        <Accordion.Body>
+                          {film &&
+                            film.map(
+                              (session, ses_key) =>
+                                !!session.length && (
+                                  <span key={ses_key} className='text-red-600'>
+                                    {timeStampToDate(
+                                      allFilms[film_key]['sessions'][ses_key]
+                                    )}{' '}
+                                    - {pluralize(session.length, 'seat')}
+                                    <div id='purchased_seats'>
+                                      {session &&
+                                        session.map((seat, seat_key) => (
+                                          <button
+                                            key={seat_key}
+                                           
+                                            className='my-2 m-1 p-1 px-2bg-gray-500 '
+                                          >
+                                            <p className='bg-gray-400 py-1 text-white rounded px-2'>{leadingZero(seat['seat'])} </p>
+                                            <AiOutlineClose
+                                            className='text-3xl font-bold text-white bg-red-500 rounded-full p-1'
+                                              onClick={(e) =>
+                                                removeTicket(
+                                                  film_key,
+                                                  ses_key,
+                                                  seat['seat']
+                                                )
+                                              }
+                                            />
+                                          </button>
+                                        ))}
+                                    </div>
+                                  </span>
+                                )
+                            )}
+                        </Accordion.Body>
+                      </Accordion.Item>
+                    )
+                )}
+            </Accordion>
 
-                  <hr />
+            <hr />
 
-                  <div className='mb-4'>
-                    Total: {formatPriceToShow(totalPrice)} CELO for{' '}
-                    {pluralize(ordered_tickets.length, 'seat')}{' '}
-                    <Button
-                      variant='outline-dark'
-                      className='float-end'
-                      id='proceed_purchase'
-                      onClick={() => purchase()}
-                    >
-                      Purchase
-                    </Button>
-                  </div>
-                </div>
-              </div>
+            <div className='mt-2 flex items-center justify-between'>
+              Total: {formatPriceToShow(totalPrice)} ETH for{' '}
+              {pluralize(ordered_tickets.length, 'seat')}{' '}
+              <button
+                className='px-2 py-1 rounded-3xl bg-gray-500 hover:bg-gray-600 text-white'
+                onClick={() => purchase()}
+              >
+                Purchase
+              </button>
             </div>
           </div>
         )}

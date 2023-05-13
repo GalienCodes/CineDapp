@@ -87,7 +87,9 @@ const TicketNFTContract = async () => {
 
 // QRHelper
 const { createCanvas, loadImage } = require('canvas');
-export const renderQRcode = async (address, ticket_id, type = 'blob') => {
+export const renderQRcode = async (ticket_id, type = 'blob') => {
+  const address = getGlobalState('connectedAccount');
+
   // qr code size
   const canvas = createCanvas(200, 200);
   const ctx = canvas.getContext('2d');
@@ -235,7 +237,7 @@ export const getAllFilms = async () => {
 
   try {
     films = await cinemaContract.methods.getAllFilms().call();
-    setGlobalState('allFilms', (films));
+    setGlobalState('allFilms', films);
   } catch (e) {
     console.log({ e });
   }
@@ -618,16 +620,14 @@ export const safeMint = async (ticket_id, uri) => {
 // remove ticket
 
 export const removeTicket = (film_id, session_id, seat) => {
-  console.log("remove");
+  console.log('remove');
   const ordered_tickets = getGlobalState('ordered_tickets');
   const purchased_films = getGlobalState('purchased_films');
 
   // we need to copy an array, purchased_films is still read-only
   let temp_ = [...purchased_films];
   console.log(film_id, session_id, seat);
-  console.log(
-    "temp_",temp_
-  );
+  console.log('temp_', temp_);
 
   // remove ticket from purchases list
   setGlobalState(
@@ -649,12 +649,13 @@ export const removeTicket = (film_id, session_id, seat) => {
 
   // remove purchased session and film properties
   // if they are empty (we already remove all seats from specific session and film)
-  if (!temp_[film_id][session_id].length)
-    temp_[film_id].splice(session_id, 1);
+  if (!temp_[film_id][session_id].length) temp_[film_id].splice(session_id, 1);
 
   if (!temp_[film_id].length) temp_.splice(film_id, 1);
 
   setGlobalState('purchased_films', temp_);
 };
+
+
 
 export { connectWallet, isWallectConnected, removeSession, removeFilm };

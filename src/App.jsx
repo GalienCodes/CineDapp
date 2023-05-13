@@ -4,6 +4,7 @@ import {
   getAllFilms,
   getUserRole,
   isWallectConnected,
+  mintsByUser,
   structureFilms,
 } from './sevices/Blockchain';
 import { setGlobalState, useGlobalState } from './store';
@@ -14,8 +15,9 @@ import NavBar from './components/ui/NavBar';
 import AdminPanel from './components/pages/AdminPanel';
 import ShowFilm from './components/ui/ShowFilm';
 import ShowPurchase from './components/ui/ShowPurchase';
+import TicketInfoModal from './components/pages/AdminPanel/modals/TicketInfoModal';
+import Tickets from './components/pages/Tickets';
 function App() {
-  const [connectedAccount] = useGlobalState('connectedAccount');
   // role of a user, can be client/manager/owner
   const [userRole, setUserRole] = useState(null);
   const fetchUserRole = async () => {
@@ -38,6 +40,7 @@ function App() {
     return temp;
   };
 
+
   useEffect(() => {
     const loadData = async () => {
       await isWallectConnected();
@@ -45,6 +48,7 @@ function App() {
       await getAllFilms();
       await allBookings();
       await fetchAll();
+      await mintsByUser();
     };
     loadData();
   }, [getAllFilms, allBookings]);
@@ -56,6 +60,8 @@ function App() {
         {(userRole === 'owner' || userRole === 'manager') && (
           <Route path='/admin' element={<AdminPanel userRole={userRole} />} />
         )}
+         <Route path="/tickets" element={<Tickets/>} />
+        <Route path="/ticket_info/:address/ticket/:ticket_id" element={<TicketInfoModal userRole={userRole} />} />
       </Routes>
 
       <Footer />

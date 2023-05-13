@@ -25,7 +25,7 @@ const NavBar = () => {
               <a href='/about' className='ml-4'>
                 About
               </a>
-              <a href='/my-tickets' className='ml-4'>
+              <a href='/tickets' className='ml-4'>
                 My Tickets
               </a>
               <a href='/admin' className='ml-4'>
