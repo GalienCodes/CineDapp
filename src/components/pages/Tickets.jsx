@@ -2,11 +2,9 @@ import HystModal from 'hystmodal';
 import 'hystmodal/dist/hystmodal.min.css';
 
 import { useEffect, useState } from 'react';
-import { Button } from 'react-bootstrap';
 import { toast } from 'react-hot-toast';
 import { setGlobalState, useGlobalState } from '../../store';
 import {
-  mintsByUser,
   safeMint,
   formatPriceToShow,
   leadingZero,
@@ -14,9 +12,8 @@ import {
   renderQRcode,
   uploadJson,
   uploadTicketImage,
-  fetchTickets,
+  fetchMinted,
 } from '../../sevices/Blockchain';
-import Container from '../ui/Container';
 import ShowQr from '../ui/ShowQr';
 
 const nftAddressFile = require('../../contracts/TicketNFTAddress.json');
@@ -25,21 +22,16 @@ const nftAddressFile = require('../../contracts/TicketNFTAddress.json');
 const Tickets = () => {
   const [allFilms] = useGlobalState('allFilms');
   const [bookings] = useGlobalState('bookings');
+  const [minted] = useGlobalState('minted');
   
-  console.log("tickets",bookings);
   const tickets=bookings && (bookings.reverse());
-  const [minted, setMinted] = useState([]);
+
 
   const modal = new HystModal({ linkAttributeName: 'data-hystmodal' });
 
   // qr code image data if requested
   const [qr_code, setQRcode] = useState('');
 
-  // fetch minted nfts by user
-  const fetchMinted = async () => {
-    const mints = await mintsByUser();
-    setMinted(mints);
-  };
 
   // watch qr code button event
   const watchQRcode = async (ticket_id) => {
@@ -67,7 +59,7 @@ const Tickets = () => {
         `https://gateway.pinata.cloud/ipfs/${meta_hash}`
       )
     )
-      fetchMinted();
+    await  fetchMinted();
   };
 
   // render button on ticket
@@ -75,20 +67,20 @@ const Tickets = () => {
     const search = minted.find((value) => value.ticket_id === ticket_id);
     if (search) {
       return (
-        <button
-          className='px-2 py-1 rounded-3xl bg-gray-500 text-white font-normal text-lg hover:bg-gray-600 focus:outline-none'
-          href={`https://explorer.celo.org/alfajores/token/${nftAddressFile.TicketNFT.toLowerCase()}/instance/${
+        <a
+          className='px-2 py-1 text-center rounded-3xl bg-gray-500 text-white font-normal text-lg hover:bg-gray-600 focus:outline-none'
+          href={`https://sepolia.etherscan.io/nft/${nftAddressFile.TicketNFT.toLowerCase()}/${
             search.token_id
           }`}
           target='_blank'
         >
           Watch minted ticket
-        </button>
+        </a>
       );
     } else {
       return (
         <button
-          className='px-2 py-1 rounded-3xl bg-gray-500 text-white font-normal text-lg hover:bg-gray-600 focus:outline-none'
+          className='px-2 py-1 text-center rounded-3xl bg-gray-500 text-white font-normal text-lg hover:bg-gray-600 focus:outline-none'
           onClick={() => {
             mintNFT(ticket_id);
           }}
@@ -156,7 +148,7 @@ const Tickets = () => {
                   {formatPriceToShow(ticket.seat_price)} ETH
                     </span>
                    </p>
-                  <div className='flex gap-4 my-4'>
+                  <div className='flex flex-col sm:flex-row gap-4 my-4'>
                     <button
                       className='px-2 py-1 rounded-3xl bg-red-500 text-white font-normal text-lg hover:bg-red-600 focus:outline-none'
                       onClick={() => {

@@ -1,6 +1,8 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import {
   allBookings,
+  fetchAllTicckets,
+  fetchMinted,
   getAllFilms,
   getUserRole,
   isWallectConnected,
@@ -49,6 +51,8 @@ function App() {
       await allBookings();
       await fetchAll();
       await mintsByUser();
+      await fetchAllTicckets()
+      await fetchMinted()
     };
     loadData();
   }, [getAllFilms, allBookings]);

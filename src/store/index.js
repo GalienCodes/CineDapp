@@ -17,6 +17,7 @@ const {setGlobalState, useGlobalState, getGlobalState }=createGlobalState({
     sessions: [],
   },
   loadFilms: false,
+  loadAllTicckets:false,
   film: null,
   ordered_tickets: [],
   purchased_films: [],
@@ -24,6 +25,8 @@ const {setGlobalState, useGlobalState, getGlobalState }=createGlobalState({
   allClients: [],
   bookings: [],
   allFilms: [],
+  temp_clients:[],
+  minted:[],
   tickets:null,
   contract: null,
 });

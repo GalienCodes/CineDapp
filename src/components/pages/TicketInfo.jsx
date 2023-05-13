@@ -67,13 +67,16 @@ const TicketInfo = ({ cinemaContract, wallet_address, userRole }) => {
 
     const renderButton = () => {
         if (ticket_info.isUsed) {
-            return <Button variant="outline-dark" onClick={() => setStatus(false)}>
+            return <button className='px-2 py-1 rounded-3xl bg-gray-500 text-white font-normal text-lg hover:bg-gray-600 focus:outline-none'
+            onClick={() => setStatus(false)}>
                 Set as NOT USED
-            </Button>
+            </button>
         } else {
-            return <Button variant="outline-dark" onClick={() => setStatus(true)}>
+            return <button 
+            button className='px-2 py-1 rounded-3xl bg-gray-500 text-white font-normal text-lg hover:bg-gray-600 focus:outline-none'
+             onClick={() => setStatus(true)}>
                 Set as USED
-            </Button>
+            </button>
         }
     }
 

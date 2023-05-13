@@ -656,6 +656,34 @@ export const removeTicket = (film_id, session_id, seat) => {
   setGlobalState('purchased_films', temp_);
 };
 
+export const fetchAllTicckets = async () => {
+  setGlobalState('loadAllTicckets',true)
+  const bookings = getGlobalState('bookings');
+
+
+  let temp_clients = [];
+
+  const temp_ = allClients;
+
+  for (let el in temp_) {
+    const boookings = bookings;
+    temp_clients.push({
+      address: temp_[el],
+      tickets: boookings,
+    });
+  }
+
+  setGlobalState('temp_clients',temp_clients);
+console.log('temp_clients',temp_clients);
+  setGlobalState('loadAllTicckets',false)
+
+};
+
+ // fetch minted nfts by user
+export const fetchMinted = async () => {
+  const mints = await mintsByUser();
+  setGlobalState('minted',mints);
+};
 
 
 export { connectWallet, isWallectConnected, removeSession, removeFilm };
