@@ -1,10 +1,9 @@
 import React from "react";
 import PropTypes from "prop-types";
-import  Toaster  from "react-hot-toast";
+import { Toaster } from "react-hot-toast";
 
 const Notification = () => (
   <Toaster
-    position="top-center"
   />
 );
 

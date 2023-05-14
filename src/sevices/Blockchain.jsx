@@ -255,7 +255,6 @@ export const allBookings = async () => {
     try {
       bookings = await cinemaContract.methods.allBookings(user).call();
       setGlobalState('bookings', bookings);
-      console.log('bookings', bookings);
     } catch (e) {
       console.log({ e });
     }
@@ -272,8 +271,7 @@ export const allClients = async () => {
 
   try {
     clients = await cinemaContract.methods.allClients().call();
-    console.log('allClients', allClients);
-    setGlobalState('allClients', allClients);
+    setGlobalState('allClients', clients);
   } catch (e) {
     console.log({ e });
   }
@@ -656,34 +654,74 @@ export const removeTicket = (film_id, session_id, seat) => {
   setGlobalState('purchased_films', temp_);
 };
 
-export const fetchAllTicckets = async () => {
-  setGlobalState('loadAllTicckets',true)
-  const bookings = getGlobalState('bookings');
+export const fetchAllTickets = async() => {
+  const address = getGlobalState('connectedAccount');
+  setGlobalState('loadAllTicckets', true);
+  const allClients = getGlobalState('allClients');
 
-
+  const cinemaContract = await getEtheriumContract(
+    Cinema.abi,
+    CinemaAddress.Cinema
+  );
   let temp_clients = [];
 
   const temp_ = allClients;
 
   for (let el in temp_) {
-    const boookings = bookings;
+    const boookings = await cinemaContract.methods.allBookings(temp_[el]).call();
+    console.log(temp_[el]);
     temp_clients.push({
       address: temp_[el],
       tickets: boookings,
     });
   }
 
-  setGlobalState('temp_clients',temp_clients);
-console.log('temp_clients',temp_clients);
-  setGlobalState('loadAllTicckets',false)
-
+  setGlobalState('temp_clients', temp_clients?.reverse());
+  setGlobalState('loadAllTicckets', false);
 };
+// =================================================
+// fetch information about a ticket
+export const fetchInfo = async (ticket_id) => {
+  let ticket = [];
 
- // fetch minted nfts by user
+  const temp = await allBookings();
+
+  // find ticket index by it's id
+// find ticket index by it's id
+const ticketIndex = Object.keys(temp).find( key => temp[key].ticket_id === ticket_id);
+
+  try {
+    ticket = temp[ticketIndex];
+
+    setGlobalState('ticket_index', ticketIndex);
+  } catch (e) {
+    console.log({ e });
+  }
+
+  if (ticket) {
+    setGlobalState('loadingTicketInfo', true);
+
+    // fetch qr code of a ticket
+    setGlobalState('qr_code', await renderQRcode(ticket_id, 'data'));
+
+    // fetch a film
+    const filmTicket = (await getAllFilms())[ticket.film_id];
+
+    setGlobalState('filmTicket', filmTicket);
+
+    setGlobalState('ticket_info', ticket);
+  } else {
+    toast.error('Ticket not found');
+  }
+
+  setGlobalState('loadingTicketInfo', false);
+};
+// ===================================================
+// fetch minted nfts by user
 export const fetchMinted = async () => {
   const mints = await mintsByUser();
-  setGlobalState('minted',mints);
+  console.log("mints",mints);
+  setGlobalState('minted', mints);
 };
-
 
 export { connectWallet, isWallectConnected, removeSession, removeFilm };

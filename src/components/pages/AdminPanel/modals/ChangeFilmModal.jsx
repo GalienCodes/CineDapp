@@ -66,13 +66,13 @@ const ChangeFilmModal = ({
         <form onSubmit={(e) => proceed(e)} className="mt-4">
           <div className="mb-4">
             <label htmlFor="add_film_name" className="block font-medium mb-1">Film Name</label>
-            <input id="add_film_name" type="text" className="w-full border border-gray-300 rounded-md px-3 py-2 outline-none focus:ring-2 focus:ring-blue-500" placeholder="Enter film name" value={name} onChange={e => setName(e.target.value)} required />
+            <input id="add_film_name" type="text" className="w-full border border-gray-300 rounded-3xl px-3 py-2 outline-none focus:ring-2 focus:ring-blue-500" placeholder="Enter film name" value={name} onChange={e => setName(e.target.value)} required />
           </div>
           <div className="mb-4">
             <label htmlFor="add_film_poster" className="block font-medium mb-1">Film Poster Image Source</label>
-            <input id="add_film_poster" type="text" className="w-full border border-gray-300 rounded-md px-3 py-2 outline-none focus:ring-2 focus:ring-blue-500" placeholder="Enter film poster image src" value={poster} onChange={e => setPoster(e.target.value)} required />
+            <input id="add_film_poster" type="text" className="w-full border border-gray-300 rounded-3xl px-3 py-2 outline-none focus:ring-2 focus:ring-blue-500" placeholder="Enter film poster image src" value={poster} onChange={e => setPoster(e.target.value)} required />
           </div>
-          <button className="py-2 px-4 bg-gray-500 rounded text-white hover:bg-gray-600 w-full" type="submit">
+          <button className="py-2 px-4 bg-gray-500 rounded-3xl text-white hover:bg-gray-600 w-full" type="submit">
             {changeAction.action === "create" && "Add"}
             {changeAction.action === "update" && "Update"}
           </button>

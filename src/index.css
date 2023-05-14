@@ -5,10 +5,17 @@
 @tailwind utilities;
 
 body{
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  overflow-x: hidden;
   position: relative;
   min-height: 100vh;
   font-family: "Poppins", "sans-serif";
   background: rgb(244, 244, 252);
+}
+.shadow-bottom {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 .navbar{
   background: rgb(244, 244, 252);
@@ -36,11 +43,9 @@ body{
   }
 }
 
-.footer{
-  position: absolute !important;
-  left: 0 !important;
-  right: 0 !important;
-  bottom:0 !important;
-  /* margin-top: auto!important; */
-  
+.fotter_d{
+  position:absolute;
+  left:0;
+  bottom:0;
+  right:0;
   }

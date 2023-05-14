@@ -24,7 +24,10 @@ const Tickets = () => {
   const [bookings] = useGlobalState('bookings');
   const [minted] = useGlobalState('minted');
   
-  const tickets=bookings && (bookings.reverse());
+  console.log("Tickets Page",minted);
+  const tickets=bookings && bookings;
+  console.log("Tickets Page tickets",tickets);
+
 
 
   const modal = new HystModal({ linkAttributeName: 'data-hystmodal' });
@@ -91,34 +94,31 @@ const Tickets = () => {
     }
   };
 
-  useEffect(() => {
-    fetchMinted();
-  }, []);
 
   return (
-    <div className='max-w-4xl mx-auto '>
+    <div className='max-w-4xl mx-auto py-20'>
       {tickets &&
         tickets?.map((ticket, key) => (
-          <div className=' mx-4 md:mx-0 pt-20' key={key}>
+          <div className=' mx-4 md:mx-0 mb-4 shadow-bottom rounded-md' key={key}>
             <div className='flex gap-4 flex-col justify-between lg:flex-row'>
               <img
-                src={allFilms[ticket.film_id]['poster_img']}
-                alt={allFilms[ticket.film_id]['name']}
+                src={allFilms[ticket?.film_id]['poster_img']}
+                alt={allFilms[ticket?.film_id]['name']}
                 className='rounded-md h-80 sm:h-100  object-cover border w-full lg:w-3/6'
               />
 
-              <div className='w-full flex flex-col'>
+              <div className='w-full flex flex-col pt-4 px-4 lg:px-0'>
                 <div className='flex flex-col justify-between'>
                   <h1 className='text-md font-medium text-gray-600 '>
                     Purchase date :
                     <span className='ml-2 text-md font-medium text-red-500'>
-                      {timeStampToDate(ticket.purchase_datetime)}
+                      {timeStampToDate(ticket?.purchase_datetime)}
                     </span>
                   </h1>
                   <h1 className='text-xl font-medium text-gray-600'>
                     Ticket
                     <span className='ml-2 text-md font-medium text-red-500'>
-                      #{ticket.ticket_id}
+                      #{ticket?.ticket_id}
                     </span>
                   </h1>
                 </div>

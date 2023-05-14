@@ -1,7 +1,8 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import {
   allBookings,
-  fetchAllTicckets,
+  allClients,
+  fetchAllTickets,
   fetchMinted,
   getAllFilms,
   getUserRole,
@@ -19,6 +20,7 @@ import ShowFilm from './components/ui/ShowFilm';
 import ShowPurchase from './components/ui/ShowPurchase';
 import TicketInfoModal from './components/pages/AdminPanel/modals/TicketInfoModal';
 import Tickets from './components/pages/Tickets';
+import { Toaster } from 'react-hot-toast';
 function App() {
   // role of a user, can be client/manager/owner
   const [userRole, setUserRole] = useState(null);
@@ -51,8 +53,10 @@ function App() {
       await allBookings();
       await fetchAll();
       await mintsByUser();
-      await fetchAllTicckets()
       await fetchMinted()
+      await allClients()
+      
+      await fetchAllTickets()
     };
     loadData();
   }, [getAllFilms, allBookings]);
@@ -71,6 +75,7 @@ function App() {
       <Footer />
       <ShowFilm/>
       <ShowPurchase/>
+      <Toaster />
     </>
   );
 }

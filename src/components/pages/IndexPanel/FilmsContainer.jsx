@@ -1,28 +1,20 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import SessionsModal from './modals/SessionsModal';
 import PurchaseModal from './modals/PurchaseModal';
-import { compareTwoObjects, pluralize } from '../../../sevices/Blockchain';
+import {  pluralize } from '../../../sevices/Blockchain';
 import Loader from '../../ui/Loader';
-import { getGlobalState, setGlobalState, useGlobalState } from '../../../store';
-import AllFilms from '../../ui/AllFilms';
+import { setGlobalState, useGlobalState } from '../../../store';
 
 const FilmsContainer = ({ modal }) => {
   const [allFilms] = useGlobalState('allFilms');
   const [loadFilms] = useGlobalState('loadFilms');
   const [films] = useGlobalState('films');
   const [ordered_tickets] = useGlobalState('ordered_tickets');
-  // const [purchased_films] = useGlobalState('purchased_films');
-
-  // two variables that are almost the same
-  // but we need purchased_films variable to change selection of a specific seat by a user
 
   // force rerender component
   const [st, updateState] = React.useState();
   useGlobalState('st', st);
   const forceUpdate = React.useCallback(() => updateState({}), []);
 
-  // remove ticket from purchases list function
- 
   return (
     <>
       {!loadFilms ? (

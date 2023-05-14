@@ -1,11 +1,9 @@
 import { leadingZero, timeStampToDate} from "../../../../sevices/Blockchain";
 
 const TicketInfoModal = ({ data }) => {
-    console.log("data",data);
     return (
         <>
         <div className=" pt-20">
-            Hello the
         </div>
             {!!data &&
                 <div className="hystmodal hystmodal--simple" id="ticket_info" aria-hidden="true">

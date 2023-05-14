@@ -87,7 +87,7 @@ const ManagersContainer = () => {
           >
             <InputGroup>
               <Form.Control
-                className='mr-2 focus:outline-none  px-4 py-2  rounded'
+                className=' focus:outline-none   pl-3 py-1.5 rounded-tl-3xl rounded-bl-3xl'
                 value={addressInput}
                 onChange={(e) => setAddressInput(e.target.value)}
                 type='text'
@@ -95,7 +95,7 @@ const ManagersContainer = () => {
                 aria-label='Address of a new manager'
               />
               <button
-                className='my-2 my-sm-0 px-4 py-2 rounded bg-gray-500 hover:bg-gray-700 text-white'
+                className='my-2 my-sm-0 px-3 py-1.5 rounded-tr-3xl rounded-br-3xl bg-gray-500 hover:bg-gray-700 text-white'
                 type='submit'
               >
                 Add new manager
@@ -116,9 +116,9 @@ const ManagersContainer = () => {
               managers.map((address, key) => (
                 <div
                   key={key}
-                  className='text-center bg-white border my-1 rounded flex justify-between py-2 px-3 items-center gap-2'
+                  className='text-center rounded-3xl bg-white border my-1 flex justify-between py-2 px-3 items-center gap-2'
                 >
-                  <p className='font-medium text-gray-500'>{address}</p>
+                  <p className='font-medium text-sm text-gray-500'>{address}</p>
 
                   <button
                     className='btn btn-sm float-end p-0'

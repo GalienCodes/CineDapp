@@ -72,10 +72,10 @@ const ChangeSessionModal = ({ fetchFilms, modal, cinemaContract, changeAction })
 
     return (
 
-        <div className="hystmodal hystmodal--simple bg-gray-100" id="modalSessionAction" aria-hidden="true">
+        <div className="hystmodal hystmodal--simple rounded" id="modalSessionAction" aria-hidden="true">
   <div className="hystmodal__wrap">
-    <div className="hystmodal__window hystmodal__window--long half  rounded-md-md  px-2 py-2" role="dialog" aria-modal="true">
-      <button className="hystmodal__close text-gray-500 hover:text-gray-600" data-hystclose>Close</button>
+    <div className="hystmodal__window hystmodal__window--long half  rounded  px-4 py-2" role="dialog" aria-modal="true">
+      <button className="hystmodal__close text-gray-500 hover:text-gray-600 " data-hystclose>Close</button>
       <div className="hystmodal__styled container-fluid">
         <div className="text-center mt-4">
           <h4 className="text-xl font-semibold">
@@ -86,20 +86,20 @@ const ChangeSessionModal = ({ fetchFilms, modal, cinemaContract, changeAction })
         <form onSubmit={(e) => proceed(e)} className="mt-6">
           <div className="my-4">
             <label htmlFor="add_session_date" className="block text-gray-700 font-semibold">Date</label>
-            <input id="add_session_date" type="text" value={datetime} onChange={() => {}} placeholder="Enter date and time" required className="w-full px-4 py-2 mt-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
+            <input id="add_session_date" type="text" value={datetime} onChange={() => {}} placeholder="Enter date and time" required className="w-full px-4 py-2 mt-2 rounded-3xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
           </div>
 
           <div className="my-4">
             <label htmlFor="add_session_seats" className="block text-gray-700 font-semibold">Seats count</label>
-            <input id="add_session_seats" type="number" min="1" max="60" placeholder="Enter seats amount" value={seats} onChange={e => setSeats(e.target.value)} required className="w-full px-4 py-2 mt-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
+            <input id="add_session_seats" type="number" min="1" max="60" placeholder="Enter seats amount" value={seats} onChange={e => setSeats(e.target.value)} required className="w-full px-4 py-2 mt-2 rounded-3xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
           </div>
 
           <div className="mt-4">
             <label htmlFor="add_session_seat_price" className="block text-gray-700 font-semibold">Seat price, CELO</label>
-            <input id="add_session_seat_price" type="number" min="0.1" step="0.001" placeholder="Enter seat price" value={seatPrice} onChange={e => setSeatPrice(e.target.value)} required className="w-full px-4 py-2 mt-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
+            <input id="add_session_seat_price" type="number" min="0.1" step="0.001" placeholder="Enter seat price" value={seatPrice} onChange={e => setSeatPrice(e.target.value)} required className="w-full px-4 py-2 mt-2 rounded-3xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
           </div>
 
-          <button type="submit" className="w-full px-4 py-2 mt-6 bg-gray-500 text-white font-semibold rounded-md hover:bg-gray-600 transition duration-300"> 
+          <button type="submit" className="w-full px-4 py-2 mt-6 bg-gray-500 text-white font-semibold rounded-3xl hover:bg-gray-600 transition duration-300"> 
             {changeAction.action === "create" && "Add"}
             {changeAction.action === "update" && "Update"}
           </button>

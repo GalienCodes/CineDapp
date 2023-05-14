@@ -1,11 +1,11 @@
-import React, { useState, useEffect, useCallback } from "react"
+import React, { useState, useEffect } from "react"
 
 
 import ChangeFilmModal from "./modals/ChangeFilmModal";
 import { FaInfoCircle,FaEdit,FaTrash } from 'react-icons/fa';
 
 import SessionsModal from "./modals/SessionsModal";
-import { getAllFilms, removeFilm } from "../../../sevices/Blockchain";
+import {removeFilm } from "../../../sevices/Blockchain";
 import Loader from "../../ui/Loader";
 import { useGlobalState } from "../../../store";
 
@@ -61,13 +61,13 @@ const FilmsContainer = ({ modal, cinemaContract }) => {
          fetchAll();
         return setLoading(false);
 
-    }, [cinemaContract, fetchAll]);
+    }, [fetchAll]);
 
     return (
         <>
             {!loading ?
                 <div className="" id="films">
-                    <button  className="bg-red-500 py-2 px-4 rounded text-white mb-2" onClick={() => { setChangeAction({ action: 'create' }); modal.open('#modalFilmAction') }}>
+                    <button  className="bg-red-500 py-1.5 px-3 rounded-3xl font-medium text-white mb-2" onClick={() => { setChangeAction({ action: 'create' }); modal.open('#modalFilmAction') }}>
                         Add new Film
                     </button>
                     
@@ -86,15 +86,15 @@ const FilmsContainer = ({ modal, cinemaContract }) => {
         {films &&
           films.map((film, key) => (
             film.length != 0 && (
-              <tr key={key} className="border-b border-gray-300">
-                <td className="py-2 px-4">{key}</td>
-                <td className="py-2 px-4">{film.name}</td>
-                <td className="py-2 px-4">
+              <tr key={key} className="border-b border-gray-300 capitalize">
+                <td className="py-2 px-4 text-center">{key}</td>
+                <td className="py-2 px-4 text-center">{film.name}</td>
+                <td className="py-2 px-4 text-center text-blue-500">
                   <a href={film.poster_img} target="_blank" rel="noreferrer">
                     Watch
                   </a>
                 </td>
-                <td className="py-2 px-4">
+                <td className="py-2 px-4 text-center">
                   {film.sessions.length}{' '}
                   <button className="text-blue-600" onClick={() => {
                     setViewFilmSessions({
@@ -108,7 +108,7 @@ const FilmsContainer = ({ modal, cinemaContract }) => {
                   </button>
                 </td>
                 <td className="py-2 px-4">
-                  <div className="flex space-x-2">
+                  <div className="flex justify-between mx-2 ">
                     <button className="text-blue-600" onClick={() => {
                       setChangeAction({
                         action: 'update',
