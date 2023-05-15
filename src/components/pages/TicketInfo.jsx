@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
-import Loader from 'components/ui/Loader';
-import {  Card } from 'react-bootstrap';
+import { Card } from 'react-bootstrap';
 import {
   fetchInfo,
   formatPriceToShow,
@@ -10,26 +9,26 @@ import {
   setTicketStatus,
   timeStampToDate,
 } from '../../sevices/Blockchain';
-import { useGlobalState } from '../../store';
+import { truncate, useGlobalState } from '../../store';
+import Loader from '../ui/Loader';
 
 // view ticket info page, link from qr code ticket will open this page
-const TicketInfo = ({ cinemaContract, wallet_address, userRole }) => {
-  const [loading, setLoading] = useState(true);
+const TicketInfo = ({ userRole }) => {
+  const [connectedAccount] = useGlobalState('connectedAccount');
 
   // ticket index and ticket id are different things !!!
   // id is global for all of a tickets
   // but every user's tickets have their own indexes
   const { address, ticket_id } = useParams();
-  const ticket_index=useGlobalState('ticket_index')
-  const ticket_info=useGlobalState('ticket_info')
-  const qr_code=useGlobalState('qr_code')
-  const filmTicket=useGlobalState('filmTicket');
-  const loadingTicketInfo=useGlobalState('loadingTicketInfo');
- 
+  const [ticket_index] = useGlobalState('ticket_index');
+  const [ticket_info] = useGlobalState('ticket_info');
+  const [qr_code] = useGlobalState('qr_code');
+  const [filmTicket] = useGlobalState('filmTicket');
+  const [loadingTicketInfo] = useGlobalState('loadingTicketInfo');
 
   // if owner or manager opens a page, they have access to change ticket status
-  const setStatus = async (value) => {
-    await setTicketStatus(ticket_index, value);
+  const setStatus = async (client, value) => {
+    await setTicketStatus(client, ticket_index, value);
 
     toast.success('Success');
     await fetchInfo(ticket_id);
@@ -62,49 +61,86 @@ const TicketInfo = ({ cinemaContract, wallet_address, userRole }) => {
 
   // fetch information about a ticket
   useEffect(() => {
-    const loadInfo = async () => {
-      await fetchInfo(ticket_id);
-    };
+    const loadInfo = async () => {};
     loadInfo();
+    fetchInfo(ticket_id);
   }, [ticket_id]);
+
+  console.log('loadingTicketInfo', loadingTicketInfo[0]);
 
   return (
     <>
-      {! 'loadingTicketInfo' ? (
+      {!loadingTicketInfo ? (
         (userRole === 'owner' ||
           userRole === 'manager' ||
-          wallet_address === address) &&
+          connectedAccount === address) &&
         ticket_info ? (
-          <>
-            <div className='pricing-header px-3 py-3 pb-md-4 mx-auto text-center'>
-              <h3 className='display-6'>Ticket Info</h3>
+          <div className='max-w-4xl mx-auto py-20 text-gray-500'>
+            <div className='px-3 py-3 pb-md-4 mx-auto text-center'>
+              <h3 className='text-center text-xl text-gray-500 font-medium'>
+                Ticket Info
+              </h3>
             </div>
-            <div className='row'>
-              <div className='col-md-3 text-center'>
-                <img src={qr_code} />
+            <div className='flex gap-4 flex-col mx-4  lg:flex-row'>
+              <div className='flex flex-col'>
+                <img src={qr_code} className='rounded-md  border w-full mb-4' />
                 {userRole !== 'client' && renderButton()}
               </div>
-              <Card className='col-md-9'>
-                <Card.Body>
-                  ticket: #{ticket_info.ticket_id} <br />
-                  <hr />
-                  client: {address} <br />
-                  seat: {leadingZero(ticket_info.seat)} <br />
-                  price: {formatPriceToShow(ticket_info.seat_price)} CELO <br />
-                  <hr />
-                  film name: {filmTicket?.name} <br />
-                  session datetime:{' '}
-                  {timeStampToDate(
-                    filmTicket?.sessions[ticket_info.session_id].datetime
-                  )}{' '}
-                  <br />
-                  status: {ticket_info.isUsed ? 'Used' : 'Not used'} <br />
-                  purchase datetime:{' '}
-                  {timeStampToDate(ticket_info.purchase_datetime)}
-                </Card.Body>
-              </Card>
+              <div className='flex flex-col mx-4 '>
+                <div className=' flex flex-col'>
+                  <h1 className='text-md font-medium text-gray-600 '>
+                    Ticket: #
+                    <span className='ml-2 text-md font-medium text-red-500'>
+                      {ticket_info.ticket_id}
+                    </span>
+                  </h1>
+                  <h1 className='text-md font-medium text-gray-600 '>
+                    Client:
+                    <span className='ml-2 text-md font-medium text-red-500'>
+                      {truncate(address, 6, 6, 15)}
+                    </span>
+                  </h1>
+                  <h1 className='text-md font-medium text-gray-600 '>
+                    seat:
+                    <span className='ml-2 text-md font-medium text-red-500'>
+                      {leadingZero(ticket_info.seat)}{' '}
+                    </span>
+                  </h1>
+                  <h1 className='text-md font-medium text-gray-600 '>
+                    Price:
+                    <span className='ml-2 text-md font-medium text-red-500'>
+                      {formatPriceToShow(ticket_info.seat_price)} ETH
+                    </span>
+                  </h1>
+                  <h1 className='text-md font-medium text-gray-600 '>
+                    Film name:
+                    <span className='ml-2 capitalize text-md font-medium text-red-500'>
+                      {filmTicket?.name}
+                    </span>
+                  </h1>
+                  <h1 className='text-md font-medium text-gray-600 '>
+                    Session datetime:
+                    <span className='ml-2 text-md font-medium text-red-500'></span>
+                    {timeStampToDate(
+                      filmTicket?.sessions[ticket_info.session_id].datetime
+                    )}
+                  </h1>
+                  <h1 className='text-md font-medium text-gray-600 '>
+                    Status:
+                    <span className='ml-2 text-md font-medium text-red-500'>
+                      {ticket_info.isUsed ? 'Used' : 'Not used'}
+                    </span>
+                  </h1>
+                  <h1 className='text-md font-medium text-gray-600 '>
+                    Purchase datetime:
+                    <span className='ml-2 text-md font-medium text-red-500'>
+                      {timeStampToDate(ticket_info.purchase_datetime)}
+                    </span>
+                  </h1>
+                </div>
+              </div>
             </div>
-          </>
+          </div>
         ) : (
           <div className='pricing-header px-3 py-3 pb-md-4 mx-auto text-center'>
             <h3 className='display-6'>You have no access to this page !</h3>

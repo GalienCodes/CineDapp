@@ -1,0 +1,1 @@
+(is_in_orders ? 'bg-red-500' : 'bg-gray-600') + // Customize the background color

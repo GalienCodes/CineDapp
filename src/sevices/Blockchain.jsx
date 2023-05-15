@@ -654,7 +654,7 @@ export const removeTicket = (film_id, session_id, seat) => {
   setGlobalState('purchased_films', temp_);
 };
 
-export const fetchAllTickets = async() => {
+export const fetchAllTickets = async () => {
   const address = getGlobalState('connectedAccount');
   setGlobalState('loadAllTicckets', true);
   const allClients = getGlobalState('allClients');
@@ -668,7 +668,9 @@ export const fetchAllTickets = async() => {
   const temp_ = allClients;
 
   for (let el in temp_) {
-    const boookings = await cinemaContract.methods.allBookings(temp_[el]).call();
+    const boookings = await cinemaContract.methods
+      .allBookings(temp_[el])
+      .call();
     console.log(temp_[el]);
     temp_clients.push({
       address: temp_[el],
@@ -682,13 +684,16 @@ export const fetchAllTickets = async() => {
 // =================================================
 // fetch information about a ticket
 export const fetchInfo = async (ticket_id) => {
+  console.log('fetchInfo', ticket_id);
   let ticket = [];
 
   const temp = await allBookings();
 
   // find ticket index by it's id
-// find ticket index by it's id
-const ticketIndex = Object.keys(temp).find( key => temp[key].ticket_id === ticket_id);
+  // find ticket index by it's id
+  const ticketIndex = Object.keys(temp).find(
+    (key) => temp[key].ticket_id === ticket_id
+  );
 
   try {
     ticket = temp[ticketIndex];
@@ -699,6 +704,7 @@ const ticketIndex = Object.keys(temp).find( key => temp[key].ticket_id === ticke
   }
 
   if (ticket) {
+    console.log('ticket: ', ticket);
     setGlobalState('loadingTicketInfo', true);
 
     // fetch qr code of a ticket
@@ -710,17 +716,18 @@ const ticketIndex = Object.keys(temp).find( key => temp[key].ticket_id === ticke
     setGlobalState('filmTicket', filmTicket);
 
     setGlobalState('ticket_info', ticket);
+
+    setGlobalState('loadingTicketInfo', false);
   } else {
+    setGlobalState('loadingTicketInfo', false);
     toast.error('Ticket not found');
   }
-
-  setGlobalState('loadingTicketInfo', false);
 };
 // ===================================================
 // fetch minted nfts by user
 export const fetchMinted = async () => {
   const mints = await mintsByUser();
-  console.log("mints",mints);
+  console.log('mints', mints);
   setGlobalState('minted', mints);
 };
 

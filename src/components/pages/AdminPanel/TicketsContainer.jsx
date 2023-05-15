@@ -47,7 +47,7 @@ const TicketsContainer = ({ modal }) => {
     fetchAllTickets();
   }, []);
 
-  console.log();
+  console.log('watchTicket',watchTicket);
   return (
     <>
       {!loadAllTicckets ? (

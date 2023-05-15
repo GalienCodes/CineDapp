@@ -21,6 +21,7 @@ import ShowPurchase from './components/ui/ShowPurchase';
 import TicketInfoModal from './components/pages/AdminPanel/modals/TicketInfoModal';
 import Tickets from './components/pages/Tickets';
 import { Toaster } from 'react-hot-toast';
+import TicketInfo from './components/pages/TicketInfo';
 function App() {
   // role of a user, can be client/manager/owner
   const [userRole, setUserRole] = useState(null);
@@ -69,7 +70,7 @@ function App() {
           <Route path='/admin' element={<AdminPanel userRole={userRole} />} />
         )}
          <Route path="/tickets" element={<Tickets/>} />
-        <Route path="/ticket_info/:address/ticket/:ticket_id" element={<TicketInfoModal userRole={userRole} />} />
+        <Route path="/ticket_info/:address/ticket/:ticket_id" element={<TicketInfo userRole={userRole} />} />
       </Routes>
 
       <Footer />
