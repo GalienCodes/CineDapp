@@ -9,8 +9,8 @@ const AllFilms = () => {
   ];
 
   return (
-    <div className='flex flex-col text-gray-400 w-full mx-auto justify-center items-center font-globalFont pb-10'>
-      <h2 className='text-3xl mb-2 font-globalFont font-semibold'>
+    <div className='flex flex-col text-gray-400 w-full mx-auto justify-center items-center  mb-20'>
+      <h2 className='text-3xl mb-2  font-semibold'>
         {' '}
         Our Latest Cinemas
       </h2>
@@ -18,9 +18,9 @@ const AllFilms = () => {
         Book a cinema session
       </p>
 
-      {/* ) : (<h2 className='text-3xl mb-2 font-globalFont font-semibold capitalize'>Connect your wallet!</h2>)} */}
+      {/* ) : (<h2 className='text-3xl mb-2  font-semibold capitalize'>Connect your wallet!</h2>)} */}
 
-      <div className='grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-4 lg:gap-3 py-2.5 mx-4'>
+      <div className='grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-4 lg:gap-3 py-2.5  pb-20 mx-4'>
         {collection?.map((nft, i) => {
           return <FilmCard key={i} nft={nft} />;
         })}

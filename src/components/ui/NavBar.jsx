@@ -9,7 +9,8 @@ const NavBar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [connectedAccount] = useGlobalState('connectedAccount');
 
-  const toggleMenu = () => {
+  const toggleMenu = ({userRole}) => {
+    console.log("userRole ");
     setIsOpen(!isOpen);
   };
 
@@ -21,19 +22,22 @@ const NavBar = () => {
             <a href='/' className='flex-shrink-0 text-3xl font-bold mr-8'>
               CineDapp
             </a>
-            <div className='hidden md:block'>
+            <div className='hidden lg:block'>
               <a href='/about' className='ml-4'>
                 About
               </a>
               <a href='/tickets' className='ml-4'>
                 My Tickets
               </a>
+              {/* {userRole === 'owner' ||
+          userRole === 'manager'?(
               <a href='/admin' className='ml-4'>
                 Dashboard
               </a>
+          ):null} */}
             </div>
           </div>
-          <div className='hidden md:block'>
+          <div className='hidden lg:block'>
             <input
               type='text'
               placeholder='Search'
@@ -52,7 +56,7 @@ const NavBar = () => {
               </button>
             )}
           </div>
-          <div className='md:hidden'>
+          <div className='lg:hidden'>
             {isOpen ? (
               <AiOutlineClose
                 className='text-3xl text-gray-800 cursor-pointer'

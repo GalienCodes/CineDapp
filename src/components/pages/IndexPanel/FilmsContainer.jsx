@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import PurchaseModal from './modals/PurchaseModal';
-import {  pluralize } from '../../../sevices/Blockchain';
+import { pluralize } from '../../../sevices/Blockchain';
 import Loader from '../../ui/Loader';
 import { setGlobalState, useGlobalState } from '../../../store';
 
 const FilmsContainer = ({ modal }) => {
-  const [allFilms] = useGlobalState('allFilms');
+  const [connectedAccount] = useGlobalState('connectedAccount');
   const [loadFilms] = useGlobalState('loadFilms');
   const [films] = useGlobalState('films');
   const [ordered_tickets] = useGlobalState('ordered_tickets');
@@ -13,16 +13,14 @@ const FilmsContainer = ({ modal }) => {
   // force rerender component
   const [st, updateState] = React.useState();
   useGlobalState('st', st);
-  const forceUpdate = React.useCallback(() => updateState({}), []);
+  React.useCallback(() => updateState({}), []);
 
   return (
     <>
       {!loadFilms ? (
         <>
           {ordered_tickets.length !== 0 && (
-            <div
-              className='col-9 mx-auto wave-btn rounded' 
-            >
+            <div className='col-9 mx-auto wave-btn rounded'>
               <div className='flex gap-2 justify-between  items-center bg-white text-gray-500 px-4 py-2'>
                 <p className='text-gray-500'>
                   You have selected
@@ -39,21 +37,27 @@ const FilmsContainer = ({ modal }) => {
               </div>
             </div>
           )}
-
-          <div className='grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-4 lg:gap-3 py-2.5 mx-4'>
-            {films?.map((film, key) => {
-                  setGlobalState('viewFilmSessions',{
-                    film_id: key,
-                    film_name: film.name,
-                    sessions: film.sessions,
-                  });
-              return film.length != 0 && <Card film={film}  key={key}/>;
-            })}
-
-            {(!films || !films?.length) && (
-              <div className='mx-auto'>There are no films..</div>
-            )}
-          </div>
+          {!connectedAccount ? (
+            <div className='mx-auto flex justify-center items-center text-center font-normal text-lg text-gray-400'>
+              <p className='text-center'>Please, Connect Your Wallet</p>
+            </div>
+          ) : (
+            <div className='grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-4 lg:gap-3 py-2.5 pb-10 mx-4'>
+              {films?.map((film, key) => {
+                setGlobalState('viewFilmSessions', {
+                  film_id: key,
+                  film_name: film.name,
+                  sessions: film.sessions,
+                });
+                return film.length != 0 && <Card film={film} key={key} />;
+              })}
+            </div>
+          )}
+          {/* {(!films || !films?.length) && (
+            <div className='mx-auto flex justify-center items-center text-center font-normal text-lg text-gray-400'>
+              <p className='text-center'>There are no films...</p>
+            </div>
+          )} */}
 
           {/* purchase modal */}
           <PurchaseModal
@@ -77,7 +81,7 @@ const Card = ({ film, key }) => {
     setGlobalState('showModal', 'scale-100');
   };
   return (
-    <div className='p-4 border rounded-xl shadow-sm font-globalFont'>
+    <div className='p-4 border rounded-xl shadow-sm '>
       <img
         className='rounded-md h-80 sm:h-80 w-full object-cover border'
         src={film?.poster_img}

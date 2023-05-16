@@ -97,8 +97,8 @@ const Tickets = () => {
 
   return (
     <div className='max-w-4xl mx-auto py-20'>
-      {tickets &&
-        tickets?.map((ticket, key) => (
+      {tickets && tickets.length?(
+        tickets && tickets?.map((ticket, key) => (
           <div className=' mx-4 md:mx-0 mb-4 shadow-bottom rounded-md' key={key}>
             <div className='flex gap-4 flex-col justify-between lg:flex-row'>
               <img
@@ -164,7 +164,12 @@ const Tickets = () => {
               </div>
             </div>
           </div>
-        ))}
+        ))
+      ):(
+        <p className='pt-10 text-center font-normal text-lg text-gray-400'>You don't have any ticket !</p>
+      )
+        
+        }
 
       {/* Modal shows qr code of a ticket */}
       <ShowQr qr_code={qr_code}/>

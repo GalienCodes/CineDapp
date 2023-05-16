@@ -6,10 +6,11 @@ import {
   fetchInfo,
   formatPriceToShow,
   leadingZero,
+  renderQRcode,
   setTicketStatus,
   timeStampToDate,
 } from '../../sevices/Blockchain';
-import { truncate, useGlobalState } from '../../store';
+import { setGlobalState, truncate, useGlobalState } from '../../store';
 import Loader from '../ui/Loader';
 
 // view ticket info page, link from qr code ticket will open this page
@@ -24,16 +25,18 @@ const TicketInfo = ({ userRole }) => {
   const [ticket_info] = useGlobalState('ticket_info');
   const [qr_code] = useGlobalState('qr_code');
   const [filmTicket] = useGlobalState('filmTicket');
+  const [bookings] = useGlobalState('bookings');
+  const [allFilms] = useGlobalState('allFilms');
   const [loadingTicketInfo] = useGlobalState('loadingTicketInfo');
 
   // if owner or manager opens a page, they have access to change ticket status
-  const setStatus = async (client, value) => {
-    await setTicketStatus(client, ticket_index, value);
+  const setStatus = async ( value) => {
+    const status =await setTicketStatus( ticket_index, value);
+    if(status){
+      toast.success('Success');
+    }
 
-    toast.success('Success');
     await fetchInfo(ticket_id);
-
-    await fetchInfo();
   };
 
   const renderButton = () => {
@@ -60,13 +63,12 @@ const TicketInfo = ({ userRole }) => {
   };
 
   // fetch information about a ticket
-  useEffect(() => {
-    const loadInfo = async () => {};
-    loadInfo();
-    fetchInfo(ticket_id);
-  }, [ticket_id]);
-
-  console.log('loadingTicketInfo', loadingTicketInfo[0]);
+useEffect(()=>{
+  const loadData = async()=>{
+    await fetchInfo(ticket_id);
+  }
+  loadData()
+},[])
 
   return (
     <>
@@ -77,11 +79,11 @@ const TicketInfo = ({ userRole }) => {
         ticket_info ? (
           <div className='max-w-4xl mx-auto py-20 text-gray-500'>
             <div className='px-3 py-3 pb-md-4 mx-auto text-center'>
-              <h3 className='text-center text-xl text-gray-500 font-medium'>
+              <h3 className='text-center text-xl text-gray-500 mb-2 font-medium'>
                 Ticket Info
               </h3>
             </div>
-            <div className='flex gap-4 flex-col mx-4  lg:flex-row'>
+            <div className='flex gap-4 flex-col justify-center mx-4 sm:flex-row'>
               <div className='flex flex-col'>
                 <img src={qr_code} className='rounded-md  border w-full mb-4' />
                 {userRole !== 'client' && renderButton()}
@@ -89,7 +91,7 @@ const TicketInfo = ({ userRole }) => {
               <div className='flex flex-col mx-4 '>
                 <div className=' flex flex-col'>
                   <h1 className='text-md font-medium text-gray-600 '>
-                    Ticket: #
+                    Ticket #:
                     <span className='ml-2 text-md font-medium text-red-500'>
                       {ticket_info.ticket_id}
                     </span>
@@ -142,8 +144,8 @@ const TicketInfo = ({ userRole }) => {
             </div>
           </div>
         ) : (
-          <div className='pricing-header px-3 py-3 pb-md-4 mx-auto text-center'>
-            <h3 className='display-6'>You have no access to this page !</h3>
+          <div className='flex justify-center items-center px-3 py-20 pb-md-4 mx-auto text-center'>
+            <h3 className='pt-10 text-center font-normal text-lg text-gray-400'>You have no access to this page !</h3>
           </div>
         )
       ) : (

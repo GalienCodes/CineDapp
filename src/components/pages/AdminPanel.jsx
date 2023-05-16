@@ -10,7 +10,7 @@ import HystModal from 'hystmodal';
 // import "hystmodal/dist/hystmodal.min.css";
 import 'hystmodal/dist/hystmodal.min.css';
 
-const AdminPanel = ({ cinemaContract, userRole }) => {
+const AdminPanel = ({ cinemaContract}) => {
   const [activeTab, setActiveTab] = useState(1);
 
   const handleTabClick = (tabIndex) => {
@@ -25,7 +25,7 @@ const AdminPanel = ({ cinemaContract, userRole }) => {
   return (
     <>
       <div className='max-w-2xl mx-auto pt-20'>
-        <div className='border  border-gray-200 rounded-3xl border-gray-200 bg-white'>
+        <div className='border  border-gray-200 rounded-3xl  bg-white'>
           <nav className='-mb-px flex justify-between px-4'>
             <button
               className={`${

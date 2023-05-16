@@ -389,7 +389,7 @@ export const updateFilmSession = async (id, film_id, session) => {
   }
 };
 
-export const setTicketStatus = async (client, ticket_index, value) => {
+export const setTicketStatus = async (ticket_index, value) => {
   const address = getGlobalState('connectedAccount');
   const cinemaContract = await getEtheriumContract(
     Cinema.abi,
@@ -398,7 +398,7 @@ export const setTicketStatus = async (client, ticket_index, value) => {
   if (address) {
     try {
       await cinemaContract.methods
-        .setTicketStatus(client, ticket_index, value)
+        .setTicketStatus(address, ticket_index, value)
         .send({ from: address });
 
       return true;
@@ -408,7 +408,7 @@ export const setTicketStatus = async (client, ticket_index, value) => {
   }
 };
 
-export const addManager = async () => {
+export const addManager = async (addressInput) => {
   const address = getGlobalState('connectedAccount');
   const cinemaContract = await getEtheriumContract(
     Cinema.abi,
@@ -416,7 +416,7 @@ export const addManager = async () => {
   );
   if (address) {
     try {
-      await cinemaContract.methods.addManager(address).send({ from: address });
+      await cinemaContract.methods.addManager(addressInput).send({ from: address });
 
       return true;
     } catch (e) {
@@ -684,12 +684,11 @@ export const fetchAllTickets = async () => {
 // =================================================
 // fetch information about a ticket
 export const fetchInfo = async (ticket_id) => {
-  console.log('fetchInfo', ticket_id);
+
   let ticket = [];
 
   const temp = await allBookings();
 
-  // find ticket index by it's id
   // find ticket index by it's id
   const ticketIndex = Object.keys(temp).find(
     (key) => temp[key].ticket_id === ticket_id
@@ -704,7 +703,6 @@ export const fetchInfo = async (ticket_id) => {
   }
 
   if (ticket) {
-    console.log('ticket: ', ticket);
     setGlobalState('loadingTicketInfo', true);
 
     // fetch qr code of a ticket

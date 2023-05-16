@@ -23,6 +23,8 @@ import Tickets from './components/pages/Tickets';
 import { Toaster } from 'react-hot-toast';
 import TicketInfo from './components/pages/TicketInfo';
 function App() {
+  const [loaded, setLoaded] = useState(false);
+
   // role of a user, can be client/manager/owner
   const [userRole, setUserRole] = useState(null);
   const fetchUserRole = async () => {
@@ -41,10 +43,9 @@ function App() {
     });
     setGlobalState('films', temp);
     setGlobalState('loadFilms', false);
-    
+
     return temp;
   };
-
 
   useEffect(() => {
     const loadData = async () => {
@@ -54,28 +55,33 @@ function App() {
       await allBookings();
       await fetchAll();
       await mintsByUser();
-      await fetchMinted()
-      await allClients()
-      
-      await fetchAllTickets()
+      await fetchMinted();
+      await allClients();
+      await fetchAllTickets();
+      setLoaded(true);
     };
     loadData();
   }, [getAllFilms, allBookings]);
   return (
     <>
-      <NavBar />
-      <Routes>
-        <Route path='/' element={<LandingPage />} />
-        {(userRole === 'owner' || userRole === 'manager') && (
-          <Route path='/admin' element={<AdminPanel userRole={userRole} />} />
-        )}
-         <Route path="/tickets" element={<Tickets/>} />
-        <Route path="/ticket_info/:address/ticket/:ticket_id" element={<TicketInfo userRole={userRole} />} />
-      </Routes>
+      <NavBar userRole={userRole} />
+      {loaded ? (
+        <Routes>
+          <Route path='/' element={<LandingPage />} />
+          {(userRole === 'owner' || userRole === 'manager') && (
+            <Route path='/admin' element={<AdminPanel userRole={userRole} />} />
+          )}
+          <Route path='/tickets' element={<Tickets />} />
+          <Route
+            path='/ticket_info/:address/ticket/:ticket_id'
+            element={<TicketInfo userRole={userRole} />}
+          />
+        </Routes>
+      ) : null}
 
       <Footer />
-      <ShowFilm/>
-      <ShowPurchase/>
+      <ShowFilm />
+      <ShowPurchase />
       <Toaster />
     </>
   );
