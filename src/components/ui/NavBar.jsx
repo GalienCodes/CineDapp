@@ -4,13 +4,11 @@ import { AiOutlineClose } from 'react-icons/ai';
 import { truncate, useGlobalState } from '../../store';
 import { connectWallet } from '../../sevices/Blockchain';
 
-
-const NavBar = () => {
+const NavBar = ({ userRole }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [connectedAccount] = useGlobalState('connectedAccount');
 
-  const toggleMenu = ({userRole}) => {
-    console.log("userRole ");
+  const toggleMenu = () => {
     setIsOpen(!isOpen);
   };
 
@@ -29,12 +27,11 @@ const NavBar = () => {
               <a href='/tickets' className='ml-4'>
                 My Tickets
               </a>
-              {/* {userRole === 'owner' ||
-          userRole === 'manager'?(
-              <a href='/admin' className='ml-4'>
-                Dashboard
-              </a>
-          ):null} */}
+              {userRole === 'owner' || userRole === 'manager' ? (
+                <a href='/admin' className='ml-4'>
+                  Dashboard
+                </a>
+              ) : null}
             </div>
           </div>
           <div className='hidden lg:block'>

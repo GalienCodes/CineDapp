@@ -47,7 +47,6 @@ const TicketsContainer = ({ modal }) => {
     fetchAllTickets();
   }, []);
 
-  console.log('watchTicket',watchTicket);
   return (
     <>
       {!loadAllTicckets ? (
@@ -58,17 +57,20 @@ const TicketsContainer = ({ modal }) => {
               className='flex flex-col mx-auto text-center w-full md:w-3/5 '
             >
               <h1 className='px-2 py-2 rounded-3xl text-white font-normal text-sm  bg-gray-500 focus:outline-none'>
-                {client.address}</h1>
+                {client.address}
+              </h1>
               {client?.tickets?.map((ticket, ticket_key) => (
                 <div className='flex mx-4 justify-between border-b my-2'>
-                  <h1 className='float-left text-gray-600 '>Ticket #{ticket.ticket_id}</h1>
+                  <h1 className='float-left text-gray-600 '>
+                    Ticket #{ticket.ticket_id}
+                  </h1>
                   <div className='actions float-end '>
                     <button
                       className='btn btn-sm info mx-1'
                       title='View info'
                       onClick={() => watchInfo(client.address, ticket)}
                     >
-                      <FaExternalLinkSquareAlt  className='text-lg text-blue-500 hover:text-blue-600'/>
+                      <FaExternalLinkSquareAlt className='text-lg text-blue-500 hover:text-blue-600' />
                     </button>
                     {ticket.isUsed ? (
                       <button
@@ -78,7 +80,7 @@ const TicketsContainer = ({ modal }) => {
                           setUsed(client.address, ticket_key, false)
                         }
                       >
-                        <MdCancel className='text-lg text-red-500'/>
+                        <MdCancel className='text-lg text-red-500' />
                       </button>
                     ) : (
                       <button
@@ -88,12 +90,11 @@ const TicketsContainer = ({ modal }) => {
                           setUsed(client.address, ticket_key, true)
                         }
                       >
-                        <FaCheckSquare className='text-lg text-green-500 hover:text-green-600'/>
+                        <FaCheckSquare className='text-lg text-green-500 hover:text-green-600' />
                       </button>
                     )}
                   </div>
                 </div>
-                
               ))}
             </div>
           ))}

@@ -26,13 +26,22 @@ const SessionsModal = () => {
 
     const avaiable = checkAvailable(session_id, seat);
 
-    return (
+    return !avaiable ? (
       <button
         key={seat}
         disabled={!avaiable}
         className={
+          'py-1 px-2 mr-1 text-white bg-red-600 rounded-md' // Add additional classes for styling, like rounded corners
+        }
+      >
+        {leadingZero(seat)}
+      </button>
+    ) : (
+      <button
+        key={seat}
+        className={
           'py-1 px-2 mr-1 text-white ' + // Add a space at the end for proper class separation
-          (is_in_orders ? 'bg-red-500' : 'bg-gray-600') + // Customize the background color
+          (is_in_orders ? 'bg-green-500' : 'bg-gray-600') + // Customize the background color
           ' rounded-md' // Add additional classes for styling, like rounded corners
         }
         onClick={(e) => {
@@ -139,7 +148,7 @@ const SessionsModal = () => {
           data.sessions.map((session, key) => {
             return (
               <Accordion.Item eventKey={key} key={key}>
-                <hr className='my-2'/>
+                <hr className='my-2' />
                 <Accordion.Header className='text-gray-600'>
                   <span className='text-red-500'>
                     {timeStampToDate(session.datetime)} -{' '}

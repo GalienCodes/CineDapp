@@ -21,7 +21,7 @@ const FilmsContainer = ({ modal }) => {
         <>
           {ordered_tickets.length !== 0 && (
             <div className='col-9 mx-auto wave-btn rounded'>
-              <div className='flex gap-2 justify-between  items-center bg-white text-gray-500 px-4 py-2'>
+              <div className='flex gap-2 justify-between rounded-md items-center bg-white text-gray-500 px-4 py-2'>
                 <p className='text-gray-500'>
                   You have selected
                   <span className='font-bold  ml-2'>
@@ -38,7 +38,7 @@ const FilmsContainer = ({ modal }) => {
             </div>
           )}
           {!connectedAccount ? (
-            <div className='mx-auto flex justify-center items-center text-center font-normal text-lg text-gray-400'>
+            <div className='mx-auto flex justify-center items-center text-center py-8 font-normal text-lg text-gray-400'>
               <p className='text-center'>Please, Connect Your Wallet</p>
             </div>
           ) : (

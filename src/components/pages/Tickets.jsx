@@ -23,18 +23,12 @@ const Tickets = () => {
   const [allFilms] = useGlobalState('allFilms');
   const [bookings] = useGlobalState('bookings');
   const [minted] = useGlobalState('minted');
-  
-  console.log("Tickets Page",minted);
-  const tickets=bookings && bookings;
-  console.log("Tickets Page tickets",tickets);
-
-
+  const tickets = bookings && bookings;
 
   const modal = new HystModal({ linkAttributeName: 'data-hystmodal' });
 
   // qr code image data if requested
   const [qr_code, setQRcode] = useState('');
-
 
   // watch qr code button event
   const watchQRcode = async (ticket_id) => {
@@ -62,7 +56,7 @@ const Tickets = () => {
         `https://gateway.pinata.cloud/ipfs/${meta_hash}`
       )
     )
-    await  fetchMinted();
+      await fetchMinted();
   };
 
   // render button on ticket
@@ -94,12 +88,15 @@ const Tickets = () => {
     }
   };
 
-
   return (
     <div className='max-w-4xl mx-auto py-20'>
-      {tickets && tickets.length?(
-        tickets && tickets?.map((ticket, key) => (
-          <div className=' mx-4 md:mx-0 mb-4 shadow-bottom rounded-md' key={key}>
+      {tickets && tickets.length ? (
+        tickets &&
+        tickets?.map((ticket, key) => (
+          <div
+            className=' mx-4 md:mx-0 mb-4 shadow-bottom rounded-md'
+            key={key}
+          >
             <div className='flex gap-4 flex-col justify-between lg:flex-row'>
               <img
                 src={allFilms[ticket?.film_id]['poster_img']}
@@ -143,16 +140,16 @@ const Tickets = () => {
                     </span>
                   </p>
                   <p className='text-md font-medium text-gray-600'>
-                    Price: 
-                  <span className='ml-2 text-md font-medium text-red-500'>
-                  {formatPriceToShow(ticket.seat_price)} ETH
+                    Price:
+                    <span className='ml-2 text-md font-medium text-red-500'>
+                      {formatPriceToShow(ticket.seat_price)} ETH
                     </span>
-                   </p>
+                  </p>
                   <div className='flex flex-col sm:flex-row gap-4 my-4'>
                     <button
                       className='px-2 py-1 rounded-3xl bg-red-500 text-white font-normal text-lg hover:bg-red-600 focus:outline-none'
                       onClick={() => {
-                        setGlobalState('showQr','scale-100' )
+                        setGlobalState('showQr', 'scale-100');
                         watchQRcode(ticket.ticket_id);
                       }}
                     >
@@ -165,14 +162,14 @@ const Tickets = () => {
             </div>
           </div>
         ))
-      ):(
-        <p className='pt-10 text-center font-normal text-lg text-gray-400'>You don't have any ticket !</p>
-      )
-        
-        }
+      ) : (
+        <p className='pt-10 text-center font-normal text-lg text-gray-400'>
+          You don't have any ticket !
+        </p>
+      )}
 
       {/* Modal shows qr code of a ticket */}
-      <ShowQr qr_code={qr_code}/>
+      <ShowQr qr_code={qr_code} />
     </div>
   );
 };

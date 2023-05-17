@@ -125,7 +125,9 @@ export const renderQRcode = async (ticket_id, type = 'blob') => {
 };
 
 // upload image to pinata, result will be ipfs hash
-export const uploadTicketImage = async (address, ticket_id) => {
+export const uploadTicketImage = async (ticket_id) => {
+  const address = getGlobalState('connectedAccount');
+
   const buffer = await renderQRcode(address, ticket_id);
 
   try {
@@ -321,13 +323,18 @@ export const addFilm = async (name, poster_img) => {
       CinemaAddress.Cinema
     );
     try {
-      await cinemaContract.methods
+      setLoadingMsg('Add Film');
+      const result = await cinemaContract.methods
         .addFilm(name, poster_img)
         .send({ from: address });
-
+      if (result) {
+        setAlert('Film Added successfully', 'white');
+        window.location.reload();
+      }
       return true;
     } catch (e) {
       console.log({ e });
+      setAlert('Proccess failed', 'red');
     }
   }
 };
@@ -340,13 +347,17 @@ export const removeManager = async (performActions) => {
   );
   if (address) {
     try {
-      await cinemaContract.methods
+      setLoadingMsg('Remove Manager');
+      const result = await cinemaContract.methods
         .removeManager(address)
         .send({ from: address });
-
+      if (result) {
+        setAlert('Manager removed successfully', 'white');
+      }
       return true;
     } catch (e) {
       console.log({ e });
+      setAlert('Proccess failed', 'red');
     }
   }
 };
@@ -359,13 +370,18 @@ export const addFilmSession = async (film_id, session) => {
   );
   if (address) {
     try {
-      await cinemaContract.methods
+      setLoadingMsg('Add Film Session');
+      const result = await cinemaContract.methods
         .addFilmSession(film_id, session)
         .send({ from: address });
-
+      if (result) {
+        setAlert('Session Added successfully', 'white');
+        window.location.reload();
+      }
       return true;
     } catch (e) {
       console.log({ e });
+      setAlert('Proccess failed', 'red');
     }
   }
 };
@@ -378,13 +394,18 @@ export const updateFilmSession = async (id, film_id, session) => {
   );
   if (address) {
     try {
-      await cinemaContract.methods
+      setLoadingMsg('Update Film');
+      const result = await cinemaContract.methods
         .updateFilmSession(id, film_id, session)
         .send({ from: address });
-
+      if (result) {
+        setAlert('Session updated successfully', 'white');
+        window.location.reload();
+      }
       return true;
     } catch (e) {
       console.log({ e });
+      setAlert('Proccess failed', 'red');
     }
   }
 };
@@ -397,13 +418,18 @@ export const setTicketStatus = async (ticket_index, value) => {
   );
   if (address) {
     try {
-      await cinemaContract.methods
+      setLoadingMsg('Set status');
+      const result = await cinemaContract.methods
         .setTicketStatus(address, ticket_index, value)
         .send({ from: address });
-
+      if (result) {
+        setAlert('Status set successfully', 'white');
+        window.reload()
+      }
       return true;
     } catch (e) {
       console.log({ e });
+      setAlert('Proccess failed', 'red');
     }
   }
 };
@@ -416,11 +442,18 @@ export const addManager = async (addressInput) => {
   );
   if (address) {
     try {
-      await cinemaContract.methods.addManager(addressInput).send({ from: address });
-
+      setLoadingMsg('Add Manager ');
+      const result = await cinemaContract.methods
+        .addManager(addressInput)
+        .send({ from: address });
+      if (result) {
+        setAlert('Manager Added successfully', 'white');
+        window.reload()
+      }
       return true;
     } catch (e) {
       console.log({ e });
+      setAlert('Proccess failed', 'red');
     }
   }
 };
@@ -433,13 +466,19 @@ export const updateFilm = async (id, name, poster_img) => {
   );
   if (address) {
     try {
-      await cinemaContract.methods
+      setLoadingMsg('Update Film');
+      const result = await cinemaContract.methods
         .updateFilm(id, name, poster_img)
         .send({ from: address });
+      if (result) {
+        setAlert('Film updated successfully', 'white');
+        window.location.reload();
 
+      }
       return true;
     } catch (e) {
       console.log({ e });
+      setAlert('Proccess failed', 'red');
     }
   }
 };
@@ -460,7 +499,7 @@ export const purchaseBooking = async (new_bookings, total) => {
 
       for (var i = new_bookings.length - 1; i--; )
         ids.push(ids[ids.length - 1] + 1);
-
+      setLoadingMsg('Purchase Ticket');
       await cinemaContract.methods
         .purchaseBooking(address, new_bookings)
         .send({ from: address, value: total })
@@ -468,9 +507,9 @@ export const purchaseBooking = async (new_bookings, total) => {
           // this needs to immediately upload our images
           // in general, uploading takes some time and i thought uploading right after purchase will help
           // but sometimes images are not avaiable for 5-30 minutes, so we will notice this
+          setAlert('Ticket purchased successfully', 'white');
           for (let i in ids) {
             const image_hash = await uploadTicketImage(address, ids[i]);
-
             await uploadJson(ids[i], image_hash);
           }
         });
@@ -478,7 +517,7 @@ export const purchaseBooking = async (new_bookings, total) => {
       return true;
     } catch (e) {
       console.log({ e });
-
+      setAlert('Proccess failed', 'red');
       return false;
     }
   }
@@ -492,9 +531,17 @@ const removeFilm = async (id) => {
   );
   if (address) {
     try {
-      await cinemaContract.methods.removeFilm(id).send({ from: address });
+      setLoadingMsg('Remove Film');
+      const result = await cinemaContract.methods
+        .removeFilm(id)
+        .send({ from: address });
+      if (result) {
+        setAlert('Film removed successfully', 'white');
+        window.location.reload();
+      }
     } catch (e) {
       console.log({ e });
+      setAlert('Proccess failed', 'red');
     }
   }
 };
@@ -507,11 +554,16 @@ const removeSession = async (id, film_id) => {
       CinemaAddress.Cinema
     );
     try {
-      await cinemaContract.methods
+      setLoadingMsg('Remove Session');
+      const result = await cinemaContract.methods
         .removeSession(id, film_id)
         .send({ from: address });
+      if (result) {
+        setAlert('Session removed successfully', 'white');
+      }
     } catch (e) {
       console.log({ e });
+      setAlert('Proccess failed', 'red');
     }
   }
 };
@@ -590,6 +642,7 @@ export const mintsByUser = async () => {
       mints = await ticketNFTContract.methods.mintsByUser(address).call();
     } catch (e) {
       console.log({ e });
+      setAlert('Proccess failed', 'red');
     }
   }
 
@@ -604,13 +657,17 @@ export const safeMint = async (ticket_id, uri) => {
   const address = getGlobalState('connectedAccount');
   if (address) {
     try {
-      await ticketNFTContract.methods
+      setLoadingMsg('Mint Ticket');
+      const result = await ticketNFTContract.methods
         .safeMint(address, ticket_id, uri)
         .send({ from: address });
-
+      if (result) {
+        setAlert('Ticket minted successfully');
+      }
       return true;
     } catch (e) {
       console.log({ e });
+      setAlert('Proccess failed', 'red');
     }
   }
 };
@@ -618,14 +675,11 @@ export const safeMint = async (ticket_id, uri) => {
 // remove ticket
 
 export const removeTicket = (film_id, session_id, seat) => {
-  console.log('remove');
   const ordered_tickets = getGlobalState('ordered_tickets');
   const purchased_films = getGlobalState('purchased_films');
 
   // we need to copy an array, purchased_films is still read-only
   let temp_ = [...purchased_films];
-  console.log(film_id, session_id, seat);
-  console.log('temp_', temp_);
 
   // remove ticket from purchases list
   setGlobalState(
@@ -671,7 +725,6 @@ export const fetchAllTickets = async () => {
     const boookings = await cinemaContract.methods
       .allBookings(temp_[el])
       .call();
-    console.log(temp_[el]);
     temp_clients.push({
       address: temp_[el],
       tickets: boookings,
@@ -684,7 +737,6 @@ export const fetchAllTickets = async () => {
 // =================================================
 // fetch information about a ticket
 export const fetchInfo = async (ticket_id) => {
-
   let ticket = [];
 
   const temp = await allBookings();
@@ -721,11 +773,9 @@ export const fetchInfo = async (ticket_id) => {
     toast.error('Ticket not found');
   }
 };
-// ===================================================
 // fetch minted nfts by user
 export const fetchMinted = async () => {
   const mints = await mintsByUser();
-  console.log('mints', mints);
   setGlobalState('minted', mints);
 };
 

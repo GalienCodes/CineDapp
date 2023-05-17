@@ -22,6 +22,8 @@ import TicketInfoModal from './components/pages/AdminPanel/modals/TicketInfoModa
 import Tickets from './components/pages/Tickets';
 import { Toaster } from 'react-hot-toast';
 import TicketInfo from './components/pages/TicketInfo';
+import Alert from './components/ui/Alert';
+import Loading from './components/ui/Loading';
 function App() {
   const [loaded, setLoaded] = useState(false);
 
@@ -82,6 +84,8 @@ function App() {
       <Footer />
       <ShowFilm />
       <ShowPurchase />
+      <Loading/>
+      <Alert/>
       <Toaster />
     </>
   );

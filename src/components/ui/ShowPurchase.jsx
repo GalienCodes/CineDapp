@@ -26,10 +26,9 @@ const ShowPurchase = () => {
   useEffect(() => {
     if (purchased_films?.length) {
       if (!ordered_tickets?.length) {
-        setGlobalState('showPurchase', 'scale-0');
+        setGlobalState('showPurchase', 'scale-0')
         return;
       }
-
       let temp_price = 0;
 
       ordered_tickets?.forEach((ticket) => {
@@ -41,6 +40,13 @@ const ShowPurchase = () => {
       setTotalPrice(temp_price);
     }
   }, [purchased_films, ordered_tickets]);
+
+  useEffect(()=>{
+    if (!ordered_tickets?.length) {
+      setGlobalState('showPurchase', 'scale-0')
+      return;
+    }
+  },[ordered_tickets?.length])
 
   const purchase = async () => {
     let purchases = [];
@@ -70,7 +76,7 @@ const ShowPurchase = () => {
       setGlobalState('purchased_films', []);
       setGlobalState('ordered_tickets', []);
 
-      toast.success('Success, watch your profile to check tickets.');
+      toast.success('Success, watch my tickets page to check tickets.');
     } else {
       toast.error('Error, watch console to see details');
 

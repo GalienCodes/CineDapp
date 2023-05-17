@@ -114,7 +114,7 @@ const PurchaseModal = ({ purchased_films, allFilms, setPurchasedFilms, ordered_t
                                 <hr />
 
                                 <div className="mb-4">
-                                    Total: {formatPriceToShow(totalPrice)} CELO for {pluralize(ordered_tickets.length, "seat")}{" "}
+                                    Total: {formatPriceToShow(totalPrice)} ETH for {pluralize(ordered_tickets.length, "seat")}{" "}
                                     <Button variant="outline-dark" className="float-end" id="proceed_purchase" onClick={() => purchase()}>Purchase</Button>
                                 </div>
 

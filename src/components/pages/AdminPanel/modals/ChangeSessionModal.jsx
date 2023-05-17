@@ -95,7 +95,7 @@ const ChangeSessionModal = ({ fetchFilms, modal, cinemaContract, changeAction })
           </div>
 
           <div className="mt-4">
-            <label htmlFor="add_session_seat_price" className="block text-gray-700 font-semibold">Seat price, CELO</label>
+            <label htmlFor="add_session_seat_price" className="block text-gray-700 font-semibold">Seat price, ETH</label>
             <input id="add_session_seat_price" type="number" min="0.1" step="0.001" placeholder="Enter seat price" value={seatPrice} onChange={e => setSeatPrice(e.target.value)} required className="w-full px-4 py-2 mt-2 rounded-3xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
           </div>
 

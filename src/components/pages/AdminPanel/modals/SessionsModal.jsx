@@ -95,7 +95,7 @@ const SessionsModal = ({ fetchFilms, data, modal }) => {
                           </td>
                           <td className='py-2 px-4'>{session.seats_count}</td>
                           <td className='py-2 px-4'>
-                            {formatPriceToShow(session.seat_price)} CELO
+                            {formatPriceToShow(session.seat_price)} ETH
                           </td>
                           <td className='py-2 px-4'>
                             <div className='flex justify-between mx-1'>
