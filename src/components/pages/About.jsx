@@ -31,8 +31,8 @@ const About = () => {
             </div>
           </p>
           <p className='py-2 px-4 shadow-md border'>
-            CineDapp has 4 main pages - index(with list of movies), admin panel,
-            user profile and ticket information page.Client has opportunity to
+            CineDapp has 5 pages - index(with list of movies), admin panel,
+            About, My Tickets and ticket information page.Client has opportunity to
             see a list of available seats and already occupied ones by another
             users. The client can also purchase some tickets to different
             sessions at once. There is admin panel on the site, owner and
@@ -55,7 +55,7 @@ const About = () => {
               <span>2. </span>Create a wallet.
             </p>
             <p className=' text-gray-700 text-base'>
-              <span>3. </span> Go to <a href="https://sepoliafaucet.com/" target='_blank' className=' text-blue-500'> https://sepoliafaucet.com</a> and get tokens for testnet.
+              <span>3. </span> Go to <a href="https://sepoliafaucet.com/" target='_blank' className=' text-blue-500'> https://sepoliafaucet.com</a> and get tokens for the sepolia testnet.
             </p>
             <p className=' text-gray-700 text-base'>
               <span>4. </span> Switch to the sepolia testnet in the Metamask.
