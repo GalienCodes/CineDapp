@@ -294,7 +294,7 @@ export const allManagers = async () => {
     console.log({ e });
   }
 
-  return managers;
+  return managers?.reverse();
 };
 
 export const isNewManager = async (addressInput) => {
