@@ -23,8 +23,8 @@ Every ticket qr code is auto-generated and stores by pinata api
 This Dapp uses the following tech stack:
 
 - React - A JavaScript library for building user interfaces.
-- use-Contractkit - A frontend library for interacting with the Celo blockchain.
--  Hardhat - A tool for writing and deploying smart contracts.
+- web.js - A frontend library for interacting with the ethereum blockchain.
+- Hardhat - A tool for writing and deploying smart contracts.
 - Tailwindcss - A CSS framework that provides responsive, mobile-first layouts.
 - Axios - A promise-based HTTP client for node.js. Used to send requests to pinata api.
 - react-hot- toast - Javascript library for non-blocking notifications.
