@@ -24,6 +24,7 @@ import { Toaster } from 'react-hot-toast';
 import TicketInfo from './components/pages/TicketInfo';
 import Alert from './components/ui/Alert';
 import Loading from './components/ui/Loading';
+import About from './components/pages/About';
 function App() {
   const [loaded, setLoaded] = useState(false);
 
@@ -74,6 +75,7 @@ function App() {
             <Route path='/admin' element={<AdminPanel userRole={userRole} />} />
           )}
           <Route path='/tickets' element={<Tickets />} />
+          <Route path='/about' element={<About />} />
           <Route
             path='/ticket_info/:address/ticket/:ticket_id'
             element={<TicketInfo userRole={userRole} />}

@@ -424,7 +424,7 @@ export const setTicketStatus = async (ticket_index, value) => {
         .send({ from: address });
       if (result) {
         setAlert('Status set successfully', 'white');
-        window.reload()
+        window.location.reload();
       }
       return true;
     } catch (e) {
@@ -448,7 +448,7 @@ export const addManager = async (addressInput) => {
         .send({ from: address });
       if (result) {
         setAlert('Manager Added successfully', 'white');
-        window.reload()
+        window.location.reload();
       }
       return true;
     } catch (e) {
@@ -507,11 +507,11 @@ export const purchaseBooking = async (new_bookings, total) => {
           // this needs to immediately upload our images
           // in general, uploading takes some time and i thought uploading right after purchase will help
           // but sometimes images are not avaiable for 5-30 minutes, so we will notice this
-          setAlert('Ticket purchased successfully', 'white');
           for (let i in ids) {
             const image_hash = await uploadTicketImage(address, ids[i]);
             await uploadJson(ids[i], image_hash);
           }
+            setAlert('Ticket purchased successfully', 'white');
         });
 
       return true;
@@ -560,6 +560,7 @@ const removeSession = async (id, film_id) => {
         .send({ from: address });
       if (result) {
         setAlert('Session removed successfully', 'white');
+        window.location.reload();
       }
     } catch (e) {
       console.log({ e });
