@@ -239,11 +239,11 @@ export const getAllFilms = async () => {
 
   try {
     films = await cinemaContract.methods.getAllFilms().call();
-    setGlobalState('allFilms', films);
+    setGlobalState('allFilms', films?.reverse());
   } catch (e) {
     console.log({ e });
   }
-  return films;
+  return films?.reverse();
 };
 
 export const allBookings = async () => {
