@@ -238,7 +238,7 @@ export const getAllFilms = async () => {
   var films = [];
 
   try {
-    films = await cinemaContract.methods.getAllFilms().call();
+    films = (await cinemaContract.methods.getAllFilms().call());
     setGlobalState('allFilms', films);
   } catch (e) {
     console.log({ e });
