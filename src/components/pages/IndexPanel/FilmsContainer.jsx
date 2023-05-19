@@ -38,12 +38,12 @@ const FilmsContainer = ({ modal }) => {
             </div>
           )}
           {!connectedAccount ? (
-            <div className='mx-auto flex justify-center items-center text-center pb-8 font-normal text-lg text-gray-400'>
+            <div className='mx-auto flex justify-center items-center text-center py-8 font-normal text-lg text-gray-400'>
               <p className='text-center'>Please, Connect Your Wallet</p>
             </div>
           ) : (
             <div className='grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-4 lg:gap-3 py-2.5 pb-10 mx-4'>
-              {films?.reverse().map((film, key) => {
+              {films.map((film, key) => {
                 setGlobalState('viewFilmSessions', {
                   film_id: key,
                   film_name: film.name,
@@ -53,13 +53,12 @@ const FilmsContainer = ({ modal }) => {
               })}
             </div>
           )}
-          {connectedAccount
-            ? (!films || !films?.length) && (
-                <div className='mx-auto flex justify-center items-center text-center font-normal text-lg -mt-10 pb-2 text-gray-400'>
-                  <p className='text-center'>There are no films</p>
-                </div>
-              )
-            : null}
+          {/* {(!films || !films?.length) && (
+            <div className='mx-auto flex justify-center items-center text-center font-normal text-lg text-gray-400'>
+              <p className='text-center'>There are no films...</p>
+            </div>
+          )} */}
+
           {/* purchase modal */}
           <PurchaseModal
             // allFilms={films}
