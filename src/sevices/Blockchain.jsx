@@ -239,11 +239,11 @@ export const getAllFilms = async () => {
 
   try {
     films = await cinemaContract.methods.getAllFilms().call();
-    setGlobalState('allFilms', films?.reverse());
+    setGlobalState('allFilms', films);
   } catch (e) {
     console.log({ e });
   }
-  return films?.reverse();
+  return films;
 };
 
 export const allBookings = async () => {
@@ -294,7 +294,7 @@ export const allManagers = async () => {
     console.log({ e });
   }
 
-  return managers?.reverse();
+  return managers;
 };
 
 export const isNewManager = async (addressInput) => {
@@ -510,8 +510,10 @@ export const purchaseBooking = async (new_bookings, total) => {
           for (let i in ids) {
             const image_hash = await uploadTicketImage(address, ids[i]);
             await uploadJson(ids[i], image_hash);
-          }
             setAlert('Ticket purchased successfully', 'white');
+            window.location.reload();
+
+          }
         });
 
       return true;
