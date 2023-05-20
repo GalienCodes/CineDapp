@@ -33,12 +33,11 @@ function App() {
   const fetchUserRole = async () => {
     setUserRole(await getUserRole());
   };
-  const fetchAll = async (key) => {
+  const fetchAll = async () => {
     setGlobalState('loadFilms', true);
     const films_ = await getAllFilms();
 
     let temp = [];
-
     // check if film is not empty
     // because in solidity we can't delete an element of array, it will be just empty
     structureFilms(films_)?.forEach((element, key) => {
@@ -46,7 +45,6 @@ function App() {
     });
     setGlobalState('films', temp);
     setGlobalState('loadFilms', false);
-
     return temp;
   };
 

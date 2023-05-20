@@ -43,13 +43,9 @@ const FilmsContainer = ({ modal }) => {
             </div>
           ) : (
             <div className='grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-4 lg:gap-3 py-2.5 pb-10 mx-4'>
-              {films.map((film, key) => {
-                setGlobalState('viewFilmSessions', {
-                  film_id: key,
-                  film_name: film.name,
-                  sessions: film.sessions,
-                });
-                return film.length != 0 && <Card film={film} key={key} />;
+              { (films?.reverse()).map((film,key) => {
+                console.log("films",key);
+                return film.length != 0 && <Card film={film} key={key} id={key}/>;
               })}
             </div>
           )}
@@ -75,10 +71,16 @@ const FilmsContainer = ({ modal }) => {
 
 export default FilmsContainer;
 
-const Card = ({ film, key }) => {
+const Card = ({ film, id }) => {
+  console.log("id card =",id)
   const setFilm = () => {
     setGlobalState('film', film);
     setGlobalState('showModal', 'scale-100');
+    setGlobalState('viewFilmSessions', {
+      film_id: id,
+      film_name: film.name,
+      sessions: film.sessions,
+    });
   };
   return (
     <div className='p-4 border rounded-xl shadow-sm '>

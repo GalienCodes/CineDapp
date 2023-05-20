@@ -16,9 +16,11 @@ import { setGlobalState, useGlobalState } from '../../../../store';
 
 const SessionsModal = () => {
   const [viewFilmSessions] = useGlobalState('viewFilmSessions');
+  const [films] = useGlobalState('films');
   const [ordered_tickets] = useGlobalState('ordered_tickets');
 
   let data = viewFilmSessions;
+  console.log("data =>",viewFilmSessions)
   const [current_tickets, setCurrentTickets] = useState([]);
 
   const buttonElement = (session_id, seat) => {
