@@ -43,7 +43,7 @@ const FilmsContainer = ({ modal }) => {
             </div>
           ) : (
             <div className='grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-4 lg:gap-3 py-2.5 pb-10 mx-4'>
-              { (films?.reverse()).map((film,key) => {
+              { films?.map((film,key) => {
                 console.log("films",key);
                 return film.length != 0 && <Card film={film} key={key} id={key}/>;
               })}
